@@ -70,3 +70,18 @@ def read_text_file(file_path):
 		debug('read_text_file' + str(e))
 		return None
 	
+def load_yaml_file(yaml_file_path):
+	"""Load YAML file."""
+
+	import yaml
+	
+	try:
+		f = open(yaml_file_path)
+		data = yaml.load(f)
+		f.close()
+
+		return data
+
+	except Exception, e:
+		raise e
+		return None

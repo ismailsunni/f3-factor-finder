@@ -5,13 +5,15 @@
 
 class tweet_model:
 	"""A class for representating a tweet."""
-	def __init__(self, id, time, text, sentiment = 0):
+	
+	def __init__(self, id, time, text, sentiment = 0, negation = 0):
 		""""Standar __init__ function"""
 
 		self.id = id
 		self.time = time
 		self.text = text
 		self.sentiment = sentiment
+		self.negation = negation
 
 
 	
