@@ -38,6 +38,11 @@ def sort_dictionary_by_value(dictionary, descending = True, num_returned = -1):
 	else:
 		return retval[0:num_returned]
 
+def remove_all_values_from_list(the_list, val):
+    '''Removing all value from a list.'''
+    
+    return [value for value in the_list if value != val]
+
 # converter
 def convert_list_of_tuple_to_dictionary(list_of_tuple):
 	'''Convert list of tuple to dictionary.'''

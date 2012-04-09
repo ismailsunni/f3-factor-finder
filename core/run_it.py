@@ -1,7 +1,7 @@
 #!/F3/core/run_it.py
 # This file is used for creating a script
 # Author : Ismail Sunni/@ismailsunni
-# Created : 2012-03-23
+# Created : 2012-04-06
 
 import MySQLdb				# accesing mysql database
 from xlwt import Workbook	# for write in excel

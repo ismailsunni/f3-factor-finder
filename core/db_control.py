@@ -60,7 +60,6 @@ class db_conn:
 			self.conn.rollback()
 			return False
 			
-
 	def read(self, list_table, list_column, list_filter):
 		'''Read from database.'''
 
@@ -160,6 +159,9 @@ class db_conn:
 			util.debug('db_control.insert error' + str(e))
 			self.conn.rollback()
 			return False
+
+	def get_data_training():
+		"""Retrieve data training from database"""
 
 def main():
 	conn = db_conn()
