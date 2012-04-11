@@ -68,6 +68,8 @@ def read_text_file(file_path):
 	try:
 		f = open(file_path)
 		list_of_string = f.readlines()
+		for _string in list_of_string:
+			_string = _string.replace('\n', '')
 		f.close()
 
 		return list_of_string

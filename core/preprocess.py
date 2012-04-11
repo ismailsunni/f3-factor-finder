@@ -7,139 +7,163 @@ import re
 import unicodedata
 import util as util
 import ttp	# module from https://github.com/BonsaiDen/twitter-text-python
+import string
 
 #	Global variables
-negation_words_file = "negation_words.txt"	# Created by ismailsunni
-stop_words_file = "stop_words.txt"			# Downloaded from http://fpmipa.upi.edu/staff/yudi/stop_words_list.txt and added by ismailsunni
+negation_words_file = "negation_words.yaml"	# Created by ismailsunni
+stop_words_file = "stop_words.yaml"			# Downloaded from http://fpmipa.upi.edu/staff/yudi/stop_words_list.txt and added by ismailsunni
 emoticons_file = "emoticons.yaml"
 
-def normalize_character(tweet):
+def normalize_character(tweet_text):
     """Normalize a string from unicode character."""
 
-    return unicodedata.normalize('NFKD', tweet.decode('latin-1')).encode('ascii', 'ignore')
+    return unicodedata.normalize('NFKD', tweet_text.decode('latin-1')).encode('ascii', 'ignore')
 
-def fold_case(tweet):
+def remove_punctuation_word(tweet_word):
+	"""Remove punctuation in a word."""
+
+	punctuations = string.punctuation + '\n'
+
+	if not (tweet_word in ['_e_pos_', '_e_sad_']):
+		for punct in punctuations:
+			tweet_word = tweet_word.replace(punct, '')
+	
+	return tweet_word
+
+def remove_punctuation_string(tweet_text):
+	"""Remove punctuation in a tweet_text.
+
+		Please use convert_emoticon first"""
+
+	tweet_words = tweet_text.split(' ')
+	retval = []
+	for tweet_word in tweet_words:
+		retval.append(remove_punctuation_word(tweet_word))
+
+	return ' '.join(retval)
+
+def fold_case(tweet_text):
 	"""Fold case of a string."""
 	
-	return tweet.lower()
+	return tweet_text.lower()
 	
-def remove_RT(tweet):
+def remove_RT(tweet_text):
 	"""Obvious function."""
 
-	regex_RT = r'\s(RT|rt)\s'
-	tweet = re.sub(regex_RT, ' ', tweet)
+	regex_RT = r'(\A|\s)(RT|rt)(\s|\Z)'
+	tweet_text = re.sub(regex_RT, ' ', tweet_text)
 	
-	return tweet
+	return tweet_text
 
-def remove_username(tweet):
+def remove_username(tweet_text):
 	"""Obvious function."""
 
 	p = ttp.Parser()
-	users = p.parse(tweet).users
+	users = p.parse(tweet_text).users
 	for user in users:
-		tweet = tweet.replace('@'+user, '')
+		tweet_text = tweet_text.replace('@'+user, '')
 
-	return tweet
+	return tweet_text
 
-def remove_URL(tweet):
+def remove_URL(tweet_text):
 	"""Obvious function."""	
 
 	p = ttp.Parser()
-	urls = p.parse(tweet).urls
+	urls = p.parse(tweet_text).urls
 	for url in urls:
-		tweet = tweet.replace(url, '')
+		tweet_text = tweet_text.replace(url, '')
 
-	return tweet
+	return tweet_text
 
-def remove_hashtag(tweet):
+def remove_hashtag(tweet_text):
 	"""Obvious function."""	
 
 	p = ttp.Parser()
-	tags = p.parse(tweet).tags
+	tags = p.parse(tweet_text).tags
 	for tag in tags:
-		tweet = tweet.replace('#'+tag, '')
+		tweet_text = tweet_text.replace('#'+tag, tag)
 
-	return tweet
+	return tweet_text
 
-def clean_number(tweet):
-	"""Clean number from tweet. Number which is cleaned is stand-alone, begining of word, and end of word number."""
+def clean_number(tweet_text):
+	"""Clean number from tweet_text. Number which is cleaned is stand-alone, begining of word, and end of word number."""
 
 	regex_begin = r'(\A| )\d+'
 	regex_end = r'\d+( |\Z|\z)'
 	regex_space = r'\s{2,}'
 
-	tweet = re.sub(regex_begin, ' ', tweet)
-	tweet = re.sub(regex_end, ' ', tweet)
-	tweet = re.sub(regex_space, ' ', tweet)
+	tweet_text = re.sub(regex_begin, ' ', tweet_text)
+	tweet_text = re.sub(regex_end, ' ', tweet_text)
+	tweet_text = re.sub(regex_space, ' ', tweet_text)
 
-	return tweet
+	return tweet_text
 
-def clean_one_char(tweet):
+def clean_one_char(tweet_text):
 	"""Clean a character surround by whitespace."""
 
 	# bug found
 	# regex_one_char = r'\s+\S\s+'
 
-	# tweet = re.sub(regex_one_char, ' ', tweet)
+	# tweet_text = re.sub(regex_one_char, ' ', tweet_text)
 
-	words = tweet.split(' ')
+	words = tweet_text.split(' ')
 	words_temp = []
 
 	for word in words:
 		if len(word) > 1:
 			words_temp.append(word)
 
-	tweet = ' '.join(words_temp)
+	tweet_text = ' '.join(words_temp)
 
-	return tweet
+	return tweet_text
 
-def convert_number(tweet):
+def convert_number(tweet_text):
 	"""Convert number to certain character."""
 
-	tweet = tweet.replace('00', 'u')
-	tweet = tweet.replace('0', 'o')
-	tweet = tweet.replace('1', 'i')
-	tweet = tweet.replace('3', 'e')
-	tweet = tweet.replace('4', 'a')
-	tweet = tweet.replace('5', 's')
-	tweet = tweet.replace('6', 'g')
-	tweet = tweet.replace('7', 't')
-	tweet = tweet.replace('8', 'b')
-	tweet = tweet.replace('9', 'g')
+	tweet_text = tweet_text.replace('00', 'u')
+	tweet_text = tweet_text.replace('0', 'o')
+	tweet_text = tweet_text.replace('1', 'i')
+	tweet_text = tweet_text.replace('3', 'e')
+	tweet_text = tweet_text.replace('4', 'a')
+	tweet_text = tweet_text.replace('5', 's')
+	tweet_text = tweet_text.replace('6', 'g')
+	tweet_text = tweet_text.replace('7', 't')
+	tweet_text = tweet_text.replace('8', 'b')
+	tweet_text = tweet_text.replace('9', 'g')
 
-	new_tweet = []
+	new_tweet_text = []
 
-	for i in xrange(0,len(tweet)):
-		if tweet[i] != '2':
-			new_tweet.append(tweet[i])
+	for i in xrange(0,len(tweet_text)):
+		if tweet_text[i] != '2':
+			new_tweet_text.append(tweet_text[i])
 		else:
-			new_tweet.append(tweet[i-1])
+			new_tweet_text.append(tweet_text[i-1])
 
-	return ''.join(new_tweet)
+	return ''.join(new_tweet_text)
 
-def convert_negation(tweet):
-	"""Count negation word. If odd, it is a negation tweet, return True, otherwise not."""
+def convert_negation(tweet_text):
+	"""Count negation word. If odd, it is a negation tweet_text, return True, otherwise not."""
 	
-	negation_words = util.read_text_file(negation_words_file)
+	negation_words = util.load_yaml_file(negation_words_file)
 	num_negation_word = 0
-	new_tweet = []
-	tweet_words = tweet.split(' ')
+	new_tweet_text = []
+	tweet_text_words = tweet_text.split(' ')
 
-	for tweet_word in tweet_words:
+	for tweet_word in tweet_text_words:
 		if tweet_word in negation_words:
 			num_negation_word += 1
 		else:
-			new_tweet.append(tweet_word)
+			new_tweet_text.append(tweet_word)
 	
 	if num_negation_word % 2 == 1:
-		return True,' '.join(new_tweet)
+		return True,' '.join(new_tweet_text)
 	else:
-		return False,' '.join(new_tweet)
+		return False,' '.join(new_tweet_text)
 
 def remove_stop_words(tweet):
 	"""Remove stop words."""
 
-	stop_words = util.read_text_file(negation_words_file)
+	stop_words = util.load_yaml_file(stop_words_file)
 	tweet_words = tweet.split(' ')
 	new_tweet = []
 
@@ -157,7 +181,7 @@ def convert_emoticon(tweet):
 	
 	# Replace emoticons
 	for emoticon in emoticon_data.keys():
-		tweet = tweet.replace(emoticon, emoticon_data[emoticon])
+		tweet = tweet.replace(emoticon, ' ' + emoticon_data[emoticon] + ' ')
 
 	return tweet
 
@@ -199,19 +223,22 @@ def preprocess_tweet(tweet):
 	tweet = remove_RT(tweet)
 	tweet = remove_URL(tweet)
 	tweet = remove_hashtag(tweet)
+	tweet = convert_emoticon(tweet)
+	tweet = clean_number(tweet)
+	tweet = remove_punctuation_string(tweet)
 	tweet = remove_stop_words(tweet)
 	tweet = remove_username(tweet)
 	tweet = convert_number(tweet)
-	tweet = convert_emoticon(tweet)
-	tweet = clean_number(tweet)
 	tweet = clean_one_char(tweet)
 	negation, tweet = convert_negation(tweet)
 
 	return negation, tweet
 
+
+
 if __name__ == '__main__':
 	tweet = 'Assalamu\'alaikum wrwb. Pagi rekan2. Kadang hati lbh hidup saat ingat kematian. Saat kebohongan tak lg diperlukan. Berkah, sehat & Semangat!'
-	tweet = 'dtg aja pas futsal mingguan atau nonbar sob! :) RT @diezchocoalmee: @ICI_Bandung. Kapan N dmana sih anak" ic i suka ngmpul'
+	tweet = 'di tidak RT dtg aja pas futsal mingguan atau no\nbar sob! :) RT @diezchocoalmee: @ICI_Bandung. Kapan N dmana sih anak" ic i suka ngmpul di rumah pak RT lho'
 
 	# print get_levenshtein_distance('ronaldinho', 'rolando')
 	print preprocess_tweet(tweet)
