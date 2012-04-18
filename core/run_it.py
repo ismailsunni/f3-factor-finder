@@ -22,7 +22,7 @@ def main_sql_to_excel():
 	db_host = 'localhost'
 	db_user = 'root'
 	db_password = ''
-	db_name = 'tweet_f3'
+	db_name = 'tahutempe'
 
 	conn = MySQLdb.connect(db_host, db_user, db_password, db_name)
 	cursor = conn.cursor()
@@ -44,32 +44,34 @@ def main_sql_to_excel():
 	i = 1
 	activeSheet.write(i, 0, 'No')
 	activeSheet.write(i, 1, 'Tweet Id')
-	activeSheet.write(i, 2, 'Created')
-	activeSheet.write(i, 3, 'Text')
+	activeSheet.write(i, 2, 'Username')
+	activeSheet.write(i, 3, 'Created')
+	activeSheet.write(i, 4, 'Text')
 	
 	from random import sample
-	result = sample(result, 500)
+	result = sample(result, 3000)
 
 	i += 1
 	try:
 		for row in result:
 			activeSheet.write(i, 0, str(i - 1))
 			activeSheet.write(i, 1, str(row[0]))
-			activeSheet.write(i, 2, row[2].__str__())
-			activeSheet.write(i, 3, pp.normalize_character(row[1]))
+			activeSheet.write(i, 2, str(row[7]))
+			activeSheet.write(i, 3, row[3].__str__())
+			activeSheet.write(i, 4, pp.normalize_character(row[1]))
 			i += 1
 			# print i
 			if i >= 50002:
 				break
 
-		book.save('test_data_training.xls')
+		book.save('test_data_training2.xls')
 		book.save(TemporaryFile())
 
 	except Exception, e:
 		util.debug(str(e))
 
 def main_excel_to_sql():
-	book = xlrd.open_workbook('test_data_training.xls')
+	book = xlrd.open_workbook('test_data_training2.xls')
 	sheet = book.sheet_by_name('tweets')
 
 	tweets = []
@@ -108,4 +110,4 @@ def move_data():
 	pass
 
 if __name__ == '__main__':
-	move_data()
+	main_sql_to_excel()

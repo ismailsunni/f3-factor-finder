@@ -4,6 +4,8 @@
 # Created : 2012-03-30
 
 from db_control import db_conn
+from datetime import datetime
+import preprocess as pp
 
 class tweet_model:
 	"""A class for representating a tweet."""
@@ -16,7 +18,23 @@ class tweet_model:
 		self.text = text
 		self.negation = negation
 		self.sentiment = sentiment
+		self.parsed_word = []
+		self.parsed = False
 
+	def print_tweet(self):
+		"""Print procedure"""
+		try:
+			print self.text
+		except Exception, e:
+			import unicodedata
+			print unicodedata.normalize('NFKD', tweet_text.decode('latin-1')).encode('ascii', 'ignore')
+
+	def preprocess(self):
+		"""Preprocess a tweet and save the result in parsed_word and negation."""
+		
+		self.negation, preprocesssed_text = pp.preprocess_tweet(self.text)
+		self.parsed_word = preprocesssed_text.split(' ')
+		self.parsed = True
 
 def get_dev_data():
 	"""Retrieve data from database for training and test as list of tweet object."""
@@ -37,14 +55,21 @@ def get_dev_data():
 
 	return tweets
 
-def get_test_data():
+def get_test_data(keyword = "", start_time = None, end_time = None):
 	"""Retrieve data from database for training and test as list of tweet object."""
 
 	db = db_conn()
 	tweets = []
 
 	query = "SELECT * FROM " + db.test_table
-	retval = db.read(query)
+	where = " WHERE `tweet_text` LIKE '%" + keyword + "%'"
+	if start_time != None:
+		where += " AND `created_at` >= '" + start_time.__str__() + "'"
+	if end_time != None:
+		where += " AND `created_at` <= '" + end_time.__str__() + "'"
+
+	retval = db.read(query + where)
+	# print query + where
 
 	for row in retval:
 		id = row[0]
@@ -57,4 +82,6 @@ def get_test_data():
 	return tweets
 
 if __name__ == '__main__':
-	pass
+	t = get_test_data('dear', datetime(2012, 3, 4, 0, 0, 0), datetime(2012, 3, 5, 0, 0, 0))
+	for s in t:
+		print s.time, s.text

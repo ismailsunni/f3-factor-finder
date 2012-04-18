@@ -11,19 +11,9 @@ debug_fe = 1
 
 def extract_feature(tweet, keyword):
 	"""Extracting feature from a tweet."""
-
-	return extract_unigram(tweet, keyword)
-
-def extract_unigram(tweet, keyword):
-	"""Extracting feature from a tweet by unigram."""
-
-	tweet.negation, features = pp.preprocess_tweet(tweet.text)
-	
-	features = features.split(' ')
-	features = util.remove_all_values_from_list(features, keyword)
-
-	# print tweet.texts
-	# print features
+	if not tweet.parsed:
+		tweet.preprocess()
+	features = util.remove_all_values_from_list(tweet.parsed_word, keyword)
 	return features
 
 def create_feature_set(dev_tweets, keyword = ""):
@@ -34,20 +24,20 @@ def create_feature_set(dev_tweets, keyword = ""):
 		new_feature = set(extract_feature(tweet, keyword))
 		features |= new_feature
 
-	util.debug(features, debug_fe)
+	# util.debug(features, debug_fe)
 	# print 'features', features
 	return features
 
-def get_tweet_feature(tweet, features, keyword = ""):
+def get_tweet_feature(tweet, features, keyword = "", max_distance = 1):
 	"""Get features of a tweet."""
 
 	tweet_features = {}
 	tweet_raw_features = extract_feature(tweet, keyword)
 
 	for feature in features:
-		tweet_features[feature] = tweet_raw_features.count(feature)	# count
-		# tweet_features[feature] =  feature in tweet_raw_features
+		# tweet_features[feature] = tweet_raw_features.count(feature)	# count
+		tweet_features[feature] =  feature in tweet_raw_features #or pp.is_near_words(feature, tweet_raw_features, max_distance)
 
-	print tweet.text
-	print tweet_features
+	# print tweet.text
+	# print tweet_features
 	return tweet_features

@@ -217,6 +217,20 @@ def get_levenshtein_distance(string_1, string_2):
 
 	return distance_matrix[first_length-1][second_length-1]
 
+def is_near(string_1, string_2, max_distance = 1):
+	"""Return true if two is string has levenshtein distance no more than max_distance."""
+
+	return get_levenshtein_distance(string_1, string_2) <= max_distance
+
+def is_near_words(string, list_string, max_distance = 1):
+	"""Return true if there is string that has levenshtein distance no more than max_distance."""
+	
+	for word in list_string:
+		if is_near(word, string, max_distance):
+			return True
+
+	return False
+
 def preprocess_tweet(tweet):
 	tweet = normalize_character(tweet)
 	tweet = fold_case(tweet)
