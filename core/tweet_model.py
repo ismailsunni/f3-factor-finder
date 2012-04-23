@@ -23,11 +23,8 @@ class tweet_model:
 
 	def print_tweet(self):
 		"""Print procedure"""
-		try:
-			print self.text
-		except Exception, e:
-			import unicodedata
-			print unicodedata.normalize('NFKD', tweet_text.decode('latin-1')).encode('ascii', 'ignore')
+		import unicodedata
+		print unicodedata.normalize('NFKD', self.text.decode('latin-1')).encode('ascii', 'ignore'), self.sentiment
 
 	def preprocess(self):
 		"""Preprocess a tweet and save the result in parsed_word and negation."""
@@ -42,7 +39,7 @@ def get_dev_data():
 	db = db_conn()
 	tweets = []
 
-	query = "SELECT * FROM " + db.dev_table
+	query = "SELECT * FROM " + db.test_table + " WHERE `dev_tweet` = 1"
 	retval = db.read(query)
 
 	for row in retval:
@@ -62,7 +59,7 @@ def get_test_data(keyword = "", start_time = None, end_time = None):
 	tweets = []
 
 	query = "SELECT * FROM " + db.test_table
-	where = " WHERE `tweet_text` LIKE '%" + keyword + "%'"
+	where = " WHERE `tweet_text` LIKE '%" + keyword + "%' AND `dev_tweet` != 1"
 	if start_time != None:
 		where += " AND `created_at` >= '" + start_time.__str__() + "'"
 	if end_time != None:

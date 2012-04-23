@@ -9,24 +9,34 @@ import tweet_model as tm
 
 debug_fe = 1
 
-def extract_feature(tweet, keyword):
+def extract_feature(tweet, keyword = ""):
 	"""Extracting feature from a tweet."""
 	if not tweet.parsed:
 		tweet.preprocess()
 	features = util.remove_all_values_from_list(tweet.parsed_word, keyword)
 	return features
 
-def create_feature_set(dev_tweets, keyword = ""):
+def create_feature_set(dev_tweets, keyword = "", min_occur = 1):
 	"""Create set of feature that will be used to train classifier."""
 
 	features = set()
+	feature_list = []
 	for tweet in dev_tweets:
 		new_feature = set(extract_feature(tweet, keyword))
+		feature_list.extend(new_feature)
 		features |= new_feature
 
-	# util.debug(features, debug_fe)
-	# print 'features', features
-	return features
+	# print 'features', len(features)
+	# print 'feature_list', len(feature_list)
+
+	retval = []
+	for feature in features:
+		if feature_list.count(feature) > min_occur:
+			retval.append(feature)
+
+	# return features
+	# print 'retval', len(retval)
+	return retval
 
 def get_tweet_feature(tweet, features, keyword = "", max_distance = 1):
 	"""Get features of a tweet."""

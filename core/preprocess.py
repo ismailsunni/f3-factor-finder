@@ -11,8 +11,9 @@ import string
 
 #	Global variables
 negation_words_file = "negation_words.yaml"	# Created by ismailsunni
-stop_words_file = "stop_words.yaml"			# Downloaded from http://fpmipa.upi.edu/staff/yudi/stop_words_list.txt and added by ismailsunni
+stop_words_file = "stop_words.yaml"			# Created by ismailsunni
 emoticons_file = "emoticons.yaml"
+synonyms_file = "synonyms.yaml"
 
 def normalize_character(tweet_text):
     """Normalize a string from unicode character."""
@@ -185,6 +186,18 @@ def convert_emoticon(tweet):
 
 	return tweet
 
+def convert_word(tweet):
+	"""Convert emoticon to corresponding term."""
+	
+	# load from yaml, get dictionary
+	synonym_data = util.load_yaml_file(synonyms_file)
+	
+	# Replace emoticons
+	for synonym in synonym_data.keys():
+		tweet = tweet.replace(synonym, ' ' + synonym_data[synonym] + ' ')
+
+	return tweet	
+
 def get_levenshtein_distance(string_1, string_2):
 	"""Return the levenshtein distance of two string."""
 
@@ -232,19 +245,21 @@ def is_near_words(string, list_string, max_distance = 1):
 	return False
 
 def preprocess_tweet(tweet):
-	tweet = normalize_character(tweet)
-	tweet = fold_case(tweet)
-	tweet = remove_RT(tweet)
-	tweet = remove_URL(tweet)
-	tweet = remove_hashtag(tweet)
-	tweet = convert_emoticon(tweet)
-	tweet = clean_number(tweet)
-	tweet = remove_punctuation_string(tweet)
-	tweet = remove_stop_words(tweet)
-	tweet = remove_username(tweet)
-	tweet = convert_number(tweet)
-	tweet = clean_one_char(tweet)
-	negation, tweet = convert_negation(tweet)
+	negation = False
+	tweet = normalize_character(tweet) 		# 0 wajib
+	# tweet = fold_case(tweet)				# 1	
+	# tweet = remove_RT(tweet)				# 2
+	tweet = remove_URL(tweet)				# 3 wajib
+	# tweet = remove_hashtag(tweet)			# 4
+	# tweet = remove_username(tweet)		# 9
+	# tweet = convert_number(tweet)			# 10
+	# tweet = clean_number(tweet)			# 6
+	# tweet = convert_emoticon(tweet)		# 5
+	# tweet = remove_punctuation_string(tweet)# 7
+	# tweet = convert_word(tweet)		# 13
+	# tweet = remove_stop_words(tweet)		# 8
+	tweet = clean_one_char(tweet)			# 11	wajib
+	# negation, tweet = convert_negation(tweet)# 12
 
 	return negation, tweet
 
@@ -252,7 +267,7 @@ def preprocess_tweet(tweet):
 
 if __name__ == '__main__':
 	tweet = 'Assalamu\'alaikum wrwb. Pagi rekan2. Kadang hati lbh hidup saat ingat kematian. Saat kebohongan tak lg diperlukan. Berkah, sehat & Semangat!'
-	tweet = 'di tidak RT dtg aja pas futsal mingguan atau no\nbar sob! :) RT @diezchocoalmee: @ICI_Bandung. Kapan N dmana sih anak" ic i suka ngmpul di rumah pak RT lho'
+	tweet = 'tau di tidak RT dtg aja pas futsal mingguan atau no\nbar sob! :) RT @diezchocoalmee: @ICI_Bandung. Kapan N dmana sih anak" ic i suka ngmpul di rumah pak RT lho'
 
 	# print get_levenshtein_distance('ronaldinho', 'rolando')
 	print preprocess_tweet(tweet)

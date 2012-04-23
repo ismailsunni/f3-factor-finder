@@ -22,7 +22,7 @@ def main_sql_to_excel():
 	db_host = 'localhost'
 	db_user = 'root'
 	db_password = ''
-	db_name = 'tahutempe'
+	db_name = 'rimus'
 
 	conn = MySQLdb.connect(db_host, db_user, db_password, db_name)
 	cursor = conn.cursor()
@@ -87,27 +87,55 @@ def main_excel_to_sql():
 	print tweets
 
 def move_data():
-	book = xlrd.open_workbook('test_data_training.xls')
+	book = xlrd.open_workbook('data_training_TA_Ismail Sunni.xls')
 	sheet = book.sheet_by_name('tweets')
 
 	tweets = []
+	k = 0
 	for row in range(sheet.nrows):
-		if sheet.row_values(row)[5] == 1:
+		if sheet.row_values(row)[6] == 3:
 			tweets.append(sheet.row_values(row))
 
 	conn = db_conn()
 
 	i = 0
 	for tweet in tweets:
-		query = "INSERT INTO " + conn.dev_table + "( `tweet_id`, `tweet_text`, `created_at`, `sentiment`) VALUES (" + str(tweet[1]) + ", '" + tweet[3] + "', '" + tweet[2] + "', "+ str(tweet[4]) +")"
-		if conn.insert_data(query) == True:
+		query = "INSERT INTO " + conn.dev_table + "( `tweet_id`, `tweet_text`, `created_at`, `sentiment`) VALUES (" + str(tweet[1]) + ", '" + tweet[4] + "', '" + tweet[3] + "', '" + str(int(tweet[5])) +"')"
+		# print query
+		if conn.insert(query) == True:
 			i += 1
 	print i
-	# print tweets
-	# print tweets_id
+
+def ultimate_function():
+	book = xlrd.open_workbook('data_training_TA_Ismail Sunni.xls')
+	sheet = book.sheet_by_name('tweets')	
+
+	tweets = []
+	for row in range(sheet.nrows):
+		if sheet.row_values(row)[6] == 3:
+			tweets.append(sheet.row_values(row))
+
+	conn = db_conn()
+
+	i = 0
+	j = 0
+	for tweet in tweets:
+		query = "UPDATE " + conn.test_table + " SET `sentiment`=" + str(int(tweet[5])) + ", `dev_tweet`= 1 WHERE `tweet_id`="+str(tweet[1])
+		if conn.update(query) == True:
+			i += 1
+		else:
+			j += 1
+	print i
+	print j
+
+def reset_data():
+	conn = db_conn()
+	query = "UPDATE " + conn.test_table + " SET `dev_tweet` = 0"
+	return conn.update(query)
 
 
-	pass
 
 if __name__ == '__main__':
-	main_sql_to_excel()
+	print reset_data()
+	ultimate_function()
+	

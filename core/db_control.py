@@ -14,7 +14,7 @@ class db_conn:
 	db_host = 'localhost'
 	db_user = 'root'
 	db_password = ''
-	db_name = 'tweet_f3'
+	db_name = 'rimus'
 
 	# table
 	dev_table = 'dev_table'

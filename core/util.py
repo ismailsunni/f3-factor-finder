@@ -3,8 +3,8 @@
 # Author : Ismail Sunni/@ismailsunni
 # Created : 2012-03-23
 
+from __future__ import division
 import operator
-
 
 # defaul values
 debug_mode = 1
@@ -42,6 +42,18 @@ def remove_all_values_from_list(the_list, val):
     '''Removing all value from a list.'''
     
     return [value for value in the_list if value != val]
+
+def chunk(the_list, n):
+	"""Chunk the_list to n part even size."""
+
+	avg = len(the_list) / n
+	retval = []
+	last = 0.0
+	while last < len(the_list):
+		retval.append(the_list[int(last):int(last + avg)])
+		last += avg
+	
+	return retval
 
 # converter
 def convert_list_of_tuple_to_dictionary(list_of_tuple):
