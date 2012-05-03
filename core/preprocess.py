@@ -187,12 +187,12 @@ def convert_emoticon(tweet):
 	return tweet
 
 def convert_word(tweet):
-	"""Convert emoticon to corresponding term."""
+	"""Convert word to corresponding term."""
 	
 	# load from yaml, get dictionary
 	synonym_data = util.load_yaml_file(synonyms_file)
 	
-	# Replace emoticons
+	# Replace word
 	for synonym in synonym_data.keys():
 		tweet = tweet.replace(synonym, ' ' + synonym_data[synonym] + ' ')
 
@@ -244,25 +244,48 @@ def is_near_words(string, list_string, max_distance = 1):
 
 	return False
 
-def preprocess_tweet(tweet):
+def preprocess_tweet(tweet, dict_param = None):
 	negation = False
-	tweet = normalize_character(tweet) 		# 0 wajib
-	# tweet = fold_case(tweet)				# 1	
-	# tweet = remove_RT(tweet)				# 2
-	tweet = remove_URL(tweet)				# 3 wajib
-	# tweet = remove_hashtag(tweet)			# 4
-	# tweet = remove_username(tweet)		# 9
-	# tweet = convert_number(tweet)			# 10
-	# tweet = clean_number(tweet)			# 6
-	# tweet = convert_emoticon(tweet)		# 5
-	# tweet = remove_punctuation_string(tweet)# 7
-	# tweet = convert_word(tweet)		# 13
-	# tweet = remove_stop_words(tweet)		# 8
-	tweet = clean_one_char(tweet)			# 11	wajib
-	# negation, tweet = convert_negation(tweet)# 12
+	if dict_param == None:
+		tweet = normalize_character(tweet) 		# 0 wajib
+		tweet = remove_URL(tweet)				# 3 wajib	
+		tweet = clean_one_char(tweet)			# 11 wajib
 
-	return negation, tweet
+		return negation, tweet
 
+	else:
+		tweet = normalize_character(tweet) 		# 0 wajib
+
+		if dict_param['fold_case'] == 1:
+			tweet = fold_case(tweet)				# 1			
+		if dict_param['remove_RT'] == 1:
+			tweet = remove_RT(tweet)				# 2
+		
+		tweet = remove_URL(tweet)				# 3 wajib
+
+		if dict_param['remove_hashtag'] == 1:
+			tweet = remove_hashtag(tweet)			# 4
+		if dict_param['remove_username'] == 1:
+			tweet = remove_username(tweet)		# 9
+		if dict_param['convert_number'] == 1:
+			tweet = convert_number(tweet)			# 10
+		if dict_param['clean_number'] == 1:
+			tweet = clean_number(tweet)			# 6
+		if dict_param['convert_emoticon'] == 1:
+			tweet = convert_emoticon(tweet)		# 5
+		if dict_param['remove_punctuation_string'] == 1:
+			tweet = remove_punctuation_string(tweet)# 7
+		if dict_param['convert_word'] == 1:
+			tweet = convert_word(tweet)		# 13
+		if dict_param['remove_stop_words'] == 1:
+			tweet = remove_stop_words(tweet)		# 8
+
+		tweet = clean_one_char(tweet)			# 11	wajib
+
+		if dict_param['convert_negation'] == 1:
+			negation, tweet = convert_negation(tweet)# 12
+
+		return negation, tweet
 
 
 if __name__ == '__main__':

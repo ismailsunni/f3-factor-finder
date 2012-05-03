@@ -26,10 +26,15 @@ class tweet_model:
 		import unicodedata
 		print unicodedata.normalize('NFKD', self.text.decode('latin-1')).encode('ascii', 'ignore'), self.sentiment
 
-	def preprocess(self):
+	def get_normal_text(self):
+
+		import unicodedata
+		return unicodedata.normalize('NFKD', self.text.decode('latin-1')).encode('ascii', 'ignore')
+
+	def preprocess(self, dict_param = None):
 		"""Preprocess a tweet and save the result in parsed_word and negation."""
 		
-		self.negation, preprocesssed_text = pp.preprocess_tweet(self.text)
+		self.negation, preprocesssed_text = pp.preprocess_tweet(self.text, dict_param)
 		self.parsed_word = preprocesssed_text.split(' ')
 		self.parsed = True
 

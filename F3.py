@@ -12,21 +12,38 @@ class F3:
 			self._classifier = classification.classifier()
 		else:
 			self._classifier = _classifier
+			
 		if _factor_finder == None:
 			self._factor_finder = ff.factor_finder([])
 		else:
 			self._factor_finder = _factor_finder
 
 	# Classifier sector
-	def train_classifier(self, dev_tweets, train_fraction = 0.5, keyword = ""):
+	def train_classifier(self, dev_tweets, num_tweet = -1, keyword = "", dict_param = None, min_occur = 1):
 		"""Train classifier using dev_tweets."""
 
-		self._classifier.train_classifier(dev_tweets, train_fraction, keyword)
+		self._classifier.train_classifier(dev_tweets, num_tweet, keyword, dict_param, min_occur)
 
-	def classify(tweet, keyword = ""):
+	def classify(self, tweet, keyword = "", dict_param = None):
 		"""Classify a tweet."""
 
-		return self._classifier.classify(tweet, keyword)
+		return self._classifier.classify(tweet, keyword, dict_param = None)
+
+	def classify_tweets(self, tweets, keyword = "", dict_param = None, num_tweet = -1):
+		"""Classify list of tweet, return the list of tweet that has been classified."""
+
+		if not (num_tweet <= -1 or num_tweet > len(tweets)):
+			tweets = tweets[:num_tweet]
+			print len(tweets)
+
+		for tweet in tweets:
+			self.classify(tweet, keyword, dict_param)
+
+		return tweets
+
+	def get_accuracy_cross_validation(self, dev_tweets, num_tweet = -1, fold = 10, keyword = "", random_seed = 0, min_occur = 1, dict_param = None):
+
+		return self._classifier.get_accuracy_cross_validation(dev_tweets, num_tweet, fold, keyword, random_seed, min_occur, dict_param)
 
 	# Factor Finder sector
 
