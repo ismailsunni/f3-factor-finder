@@ -10,6 +10,8 @@ import feature_extraction as fe
 import tweet_model as tm
 import util as util
 import random
+import pickle
+from copy import deepcopy
 
 
 class classifier():
@@ -18,16 +20,25 @@ class classifier():
 	def __init__(self, trained = False):
 		self.classifier = None
 		self.features = None
+		self.dict_param = None
+		self.min_occur = 0
 		self.trained = trained
+		
+		# not so usefull attributes
+		self.num_tweet_trained = 0
+		self.num_tweet_classified = 0
 
 	def train_classifier(self, dev_tweets, num_tweet = -1, keyword = "", dict_param = None, min_occur = 1):
 		"""Train classifier"""
-
+		
+		self.dict_param = dict_param
+		self.min_occur = min_occur
 		random.shuffle(dev_tweets)
 		if not (num_tweet <= -1 or num_tweet > len(dev_tweets)):
 			dev_tweets = dev_tweets[:num_tweet]
 
-		features = fe.create_feature_set(dev_tweets, keyword, min_occur, dict_param)
+		self.num_tweet_trained = len(dev_tweets)
+		features = fe.create_feature_set(dev_tweets, keyword, min_occur, self.dict_param)
 		self.features = features
 		feature_set = []
 		
@@ -36,7 +47,7 @@ class classifier():
 			i += 1
 			if i % 100 == 0:
 				print i
-			tweet_features = fe.get_tweet_feature(tweet, features, keyword, dict_param)
+			tweet_features = fe.get_tweet_feature(tweet, features, keyword, self.dict_param)
 			tweet_sentiment = tweet.sentiment
 			feature_set.append((tweet_features, tweet_sentiment))
 
@@ -94,7 +105,7 @@ class classifier():
 		print sum_accuracy, len(list_accuracy)
 		return sum_accuracy / fold
 
-	def classify(self, tweet, keyword = "", dict_param = None):
+	def classify(self, tweet, keyword = ""):
 		"""Classify a tweet, r
 
 		Return a sentiment."""
@@ -102,27 +113,55 @@ class classifier():
 			util.debug('classifier has not trained yet')
 			return None
 		else:
-			tweet.sentiment =  self.classifier.classify(fe.get_tweet_feature(tweet, self.features, keyword, dict_param))
+			tweet.sentiment =  self.classifier.classify(fe.get_tweet_feature(tweet, self.features, keyword, self.dict_param))
 			if tweet.negation == True:
 				tweet.sentiment *= -1
 
 			return tweet.sentiment
 
-	def classify_tweets(self, tweets, keyword = "", dict_param = None, num_tweet = -1):
+	def classify_tweets(self, tweets, keyword = "", num_tweet = -1):
 		"""Classify list of tweet, return the list of tweet that has been classified."""
 
 		if not (num_tweet <= -1 or num_tweet > len(tweets)):
 			tweets = tweets[:num_tweet]
-
+		
+		self.num_tweet_classified = len(tweets)
+		
 		i = 0
 		for tweet in tweets:
 			i += 1
 			if i % 100 == 0:
 				print i
-			self.classify(tweet, keyword, dict_param)
+			self.classify(tweet, keyword)
 
 		return tweets
 
+	def save(self, file_name):
+		"""Save classifier."""
+		try:
+			if not file_name.endswith('.pickle'):
+				file_name += '.pickle'
+			f = open(file_name, 'wb')
+			pickle.dump(self, f)
+			f.close()
+			return True
+			
+		except Exception, e:
+			util.debug("save classifier error. " + str(e))
+			return False
+	
+	def load(self, file_name):
+		"""Load classifier."""
+		try:
+			f = open(file_name)
+			self = deepcopy(pickle.load(f))
+			f.close()		
+			return True, self
+			
+		except Exception, e:
+			util.debug("load classifier error. " + str(e))
+			return False, None
+	
 def main():
 	start_time = time.asctime()
 	print start_time
@@ -136,7 +175,7 @@ def main():
 	t2 = time.clock()
 	print "get dev data : ", t2 - t1
 	c = classifier()
-	print 'akurasi : ', c.get_accuracy_cross_validation(dev_tweets)
+	#print 'akurasi : ', c.get_accuracy_cross_validation(dev_tweets)
 	t3 = time.clock()
 	print 'create classifier : ', t3 - t2
 	c.train_classifier(dev_tweets)
@@ -145,7 +184,8 @@ def main():
 	test_data = tm.get_test_data('dahlan iskan')
 	t5 = time.clock()
 	print 'get test_data : ', t5-t4
-
+	print 'save', c.save('test_save.pickle')
+	print 'load', c.load('test_save.pickle')
 	list_sentiment = []
 	random.shuffle(test_data)
 	retval = c.classify_tweets(test_data[:1000], 'dahlan iskan')
