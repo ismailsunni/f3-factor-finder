@@ -20,7 +20,9 @@ class tweet_model:
 		self.sentiment = sentiment
 		self.parsed_word = []
 		self.parsed = False
-
+		self.post_parsed_word = []
+		self.post_parsed = False	# this attribute indicate that the parsed_word has been preprocess again
+		
 	def print_tweet(self):
 		"""Print procedure"""
 		import unicodedata
@@ -37,6 +39,9 @@ class tweet_model:
 		self.negation, preprocesssed_text = pp.preprocess_tweet(self.text, dict_param)
 		self.parsed_word = preprocesssed_text.split(' ')
 		self.parsed = True
+		temp_post_parsed_word = pp.postparsed_text(preprocesssed_text)
+		self.post_parsed_word = temp_post_parsed_word.split(' ')
+		self.post_parsed = True
 
 def get_dev_data():
 	"""Retrieve data from database for training and test as list of tweet object."""

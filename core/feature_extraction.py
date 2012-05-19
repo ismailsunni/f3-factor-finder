@@ -11,9 +11,12 @@ debug_fe = 1
 
 def extract_feature(tweet, keyword = "", dict_param = None):
 	"""Extracting feature from a tweet."""
+	# print 'alpha', dict_param
 	if not tweet.parsed:
+		# print 'fe, line 15 not parsed'
 		tweet.preprocess(dict_param)
 	features = util.remove_all_values_from_list(tweet.parsed_word, keyword)
+	# print 'fe, line 18', features
 	return features
 
 def create_feature_set(dev_tweets, keyword = "", min_occur = 1, dict_param = None):
@@ -21,13 +24,11 @@ def create_feature_set(dev_tweets, keyword = "", min_occur = 1, dict_param = Non
 
 	features = set()
 	feature_list = []
+
 	for tweet in dev_tweets:
 		new_feature = set(extract_feature(tweet, keyword, dict_param))
 		feature_list.extend(new_feature)
 		features |= new_feature
-
-	# print 'features', len(features)
-	# print 'feature_list', len(feature_list)
 
 	retval = []
 	for feature in features:
@@ -35,12 +36,12 @@ def create_feature_set(dev_tweets, keyword = "", min_occur = 1, dict_param = Non
 			retval.append(feature)
 
 	# return features
-	# print 'retval', len(retval)
+	
 	return retval
 
-def get_tweet_feature(tweet, features, keyword = "", max_distance = 1, dict_param = None):
+def get_tweet_feature(tweet, features, keyword = "", dict_param = None, max_distance = 1):
 	"""Get features of a tweet."""
-
+	
 	tweet_features = {}
 	tweet_raw_features = extract_feature(tweet, keyword, dict_param)
 
@@ -48,6 +49,4 @@ def get_tweet_feature(tweet, features, keyword = "", max_distance = 1, dict_para
 		# tweet_features[feature] = tweet_raw_features.count(feature)	# count
 		tweet_features[feature] =  feature in tweet_raw_features #or pp.is_near_words(feature, tweet_raw_features, max_distance)
 
-	# print tweet.text
-	# print tweet_features
 	return tweet_features

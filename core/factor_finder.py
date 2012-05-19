@@ -17,18 +17,19 @@ from copy import deepcopy
 class factor_finder:
 	"""docstring for factor_finder"""
 
-	def __init__(self, list_tweet):
+	def __init__(self, list_tweet, keyword = ""):
 		self.list_tweet = list_tweet
 		self.memory = None	# store what?
 		# self.memory stores data of list tweet in each duration and average sentiment value
 		# self.memory[idx] = {start_time, list_tweet, end_time, sentiment}
 		# next improvement, sentiment will be delete, subtitute by creating custom function to calculate the sentiment, hope so :)
+		self.keyword = keyword
 		self.start_time = None
 		self.end_time = None
 		self.duration_hour = None
 		self.break_points = None
 		
-	def divide_sentiment_time(self, start_time, end_time, duration_hour = 1):
+	def divide_sentiment_time(self, start_time, end_time, duration_hour = 1, factor = 0.5):
 		"""Divide a list of sentiment by time, and get mean of each duration
 			Return dictionary with key=each duration, value = sentiment."""
 
@@ -46,6 +47,7 @@ class factor_finder:
 			sent_time['end_time'] = temp_start + delta_duration
 			sent_time['list_tweet'] = []
 			sent_time['sentiment'] = 0
+			sent_time['cum_sentiment'] = 0
 			retval[i] = sent_time
 
 		# Add tweet
@@ -69,7 +71,14 @@ class factor_finder:
 				mean_sentiment = sum_sentiment / num_sentiment
 			else:
 				mean_sentiment = 0
+			
+			if idx != 0:
+				retval[idx]['cum_sentiment'] = factor * retval[idx - 1]['cum_sentiment'] + mean_sentiment
+			else:
+				retval[idx]['cum_sentiment'] = mean_sentiment
+				
 			retval[idx]['sentiment'] = mean_sentiment
+			retval[idx]['num_tweet_sentiment'] = num_sentiment
 
 		self.memory = retval
 		self.start_time = start_time
@@ -78,7 +87,7 @@ class factor_finder:
 
 		return retval
 
-	def plot_graph(self):
+	def plot_graph(self, graf_type = 0):
 		"""Plot Graph"""
 
 		if self.memory == None:
@@ -89,22 +98,47 @@ class factor_finder:
 			pylab.title('F3')
 			pylab.xlabel('Time')
 			pylab.ylabel('Sentiment')
-			pylab.ylim(-1, 1)
+			
 			absis_data = []
 			for idx in self.memory.keys():
 				absis_data.append(self.memory[idx]['start_time'])
 			ordinat_data = []
-			for idx in self.memory.keys():
-				ordinat_data.append(self.memory[idx]['sentiment'])
+			
+			if graf_type == 0:			
+				for idx in self.memory.keys():
+					ordinat_data.append(self.memory[idx]['sentiment'])
+				pylab.ylim(-1, 1)
+			elif graf_type == 1:
+				for idx in self.memory.keys():
+					ordinat_data.append(self.memory[idx]['cum_sentiment'])
+				pylab.ylim(int(min(ordinat_data) - 1), int(max(ordinat_data) + 1))
+				
+			else:
+				for idx in self.memory.keys():
+					ordinat_data.append(self.memory[idx]['sentiment'])
+				pylab.ylim(-1, 1)
+					
 			pylab.plot(absis_data, ordinat_data)
 			pylab.show()
 
-	def get_break_points(self):
+	def get_break_points(self, graf_type = 0):
 		"""Get break points"""
 		
 		retval = []
 		if self.memory == None:
 			pass
+		elif graf_type == 0:
+			for idx in self.memory.keys():
+				if idx == 0 or idx == len(self.memory)-1:
+					pass
+				elif (self.memory[idx-1]['sentiment'] < self.memory[idx]['sentiment'] > self.memory[idx+1]['sentiment']) or (self.memory[idx-1]['sentiment'] > self.memory[idx]['sentiment'] < self.memory[idx+1]['sentiment']):
+					retval.append(idx)
+		elif graf_type == 1:
+			for idx in self.memory.keys():
+				if idx == 0 or idx == len(self.memory)-1:
+					pass
+				elif (self.memory[idx-1]['cum_sentiment'] < self.memory[idx]['cum_sentiment'] > self.memory[idx+1]['cum_sentiment']) or (self.memory[idx-1]['cum_sentiment'] > self.memory[idx]['cum_sentiment'] < self.memory[idx+1]['cum_sentiment']):
+					retval.append(idx)
 		else:
 			for idx in self.memory.keys():
 				if idx == 0 or idx == len(self.memory)-1:
@@ -130,12 +164,15 @@ class factor_finder:
 		for idx in self.memory.keys():
 			words_time = []
 			for tweet in self.memory[idx]['list_tweet']:
-				print tweet.parsed_word
+				# need to be finished
 				if not tweet.parsed:
 					tweet.preprocess()
-				words_time.extend(tweet.parsed_word)
+				words_time.extend(tweet.post_parsed_word)
 			list_all_word.append(words_time)
-
+			
+		list_all_word = util.remove_all_values_from_list(list_all_word, self.keyword)
+		list_all_word = util.remove_all_values_from_list(list_all_word, '')
+		print 'keyword', self.keyword
 		ir_object = ir.IR(list_all_word)
 
 		return ir_object
@@ -161,8 +198,8 @@ class factor_finder:
 		else:
 			retval = {}
 			for idx in self.break_points:
-				retval[idx] = self.get_topics(idx, num_topics)
-				print idx, retval[idx]
+				temp_retval = self.get_topics(idx, num_topics)
+				retval[idx] = [temp_retval[i][0] for i in xrange(0, len(temp_retval))]
 			
 			return retval 
 			

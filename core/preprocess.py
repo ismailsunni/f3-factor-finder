@@ -244,6 +244,33 @@ def is_near_words(string, list_string, max_distance = 1):
 
 	return False
 
+def postparsed_text(tweet_text, dict_param = None):
+	"""Postparsed is used to makesure foldcase, no punctuation, no RT for factor finder process, no username."""
+	
+	if dict_param == None:	
+		tweet_text = fold_case(tweet_text)
+		tweet_text = remove_RT(tweet_text)
+		tweet_text = remove_username(tweet_text)
+		tweet_text = remove_punctuation_string(tweet_text)
+		# tweet_text = remove_stop_words(tweet_text)
+		# tweet_text = convert_word(tweet_text)
+	
+	else:
+		if dict_param['fold_case'] == 0:
+			tweet = fold_case(tweet)				# 1			
+		if dict_param['remove_RT'] == 0:
+			tweet = remove_RT(tweet)				# 2
+		if dict_param['remove_username'] == 0:
+			tweet = remove_username(tweet)		# 9
+		if dict_param['remove_punctuation_string'] == 0:
+			tweet = remove_punctuation_string(tweet)# 7
+		#if dict_param['convert_word'] == 0:
+		#	tweet = convert_word(tweet)		# 13
+		#if dict_param['remove_stop_words'] == 0:
+		#	tweet = remove_stop_words(tweet)	
+	
+	return tweet_text
+	
 def preprocess_tweet(tweet, dict_param = None):
 	negation = False
 	if dict_param == None:

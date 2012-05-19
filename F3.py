@@ -22,12 +22,12 @@ class F3:
 	def classify_tweets(self, tweets, keyword = "", num_tweet = -1):
 		"""Classify list of tweet, return the list of tweet that has been classified.
 			And use them to create factor finder."""
-			
+		
 		# classify tweets
 		tweets = self._classifier.classify_tweets(tweets, keyword, num_tweet)
 		
 		# create new factor finder
-		self._factor_finder = ff.factor_finder(tweets)
+		self._factor_finder = ff.factor_finder(tweets, keyword)
 		
 		return tweets
 		
