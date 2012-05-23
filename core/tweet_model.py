@@ -4,7 +4,7 @@
 # Created : 2012-03-30
 
 from db_control import db_conn
-from datetime import datetime
+from datetime import datetime, timedelta
 import preprocess as pp
 
 class tweet_model:
@@ -88,7 +88,77 @@ def get_test_data(keyword = "", start_time = None, end_time = None):
 
 	return tweets
 
+def get_test_data_by_duration(keyword = "", start_time = None, end_time = None, duration_hour = 1):
+	
+	duration_second = duration_hour * 3600
+	delta_duration = timedelta(0, duration_second)
+	cur_time = start_time
+	
+	retval = []
+	dur_times = []
+	while (cur_time + delta_duration < end_time):
+		retval.append(get_test_data(keyword, cur_time, cur_time + delta_duration))
+		dur_times.append(cur_time)
+		cur_time += delta_duration
+		
+	if (cur_time < end_time):
+		dur_times.append(cur_time)
+		retval.append(get_test_data(keyword, cur_time, end_time))
+	
+	return retval, dur_times
+
 if __name__ == '__main__':
-	t = get_test_data('dear', datetime(2012, 3, 4, 0, 0, 0), datetime(2012, 3, 5, 0, 0, 0))
-	for s in t:
-		print s.time, s.text
+	# t = get_test_data('dear', datetime(2012, 3, 4, 0, 0, 0), datetime(2012, 3, 5, 0, 0, 0))
+	# for s in t:
+		# print s.time, s.text
+	
+	keyword = "foke"
+	start_time = datetime.strptime("10-4-2012 18:00:00", '%d-%m-%Y %H:%M:%S')
+	end_time = datetime.strptime("18-4-2012 12:00:00", '%d-%m-%Y %H:%M:%S')
+	duration_hour = 2
+	
+	retval, dur_times = get_test_data_by_duration(keyword, start_time, end_time, duration_hour)
+	
+	num_tweet = 0
+	for ret in retval:
+		num_tweet += len(ret)
+	print num_tweet
+	
+	# write in excel
+	from xlwt import Workbook
+	from tempfile import TemporaryFile
+	import util
+	
+	book = Workbook()
+	
+	try:
+		sheet_idx = 1
+		for list_tweet in retval:
+			activeSheet = book.add_sheet(str(sheet_idx))
+			
+			activeSheet.write(0, 0, dur_times[sheet_idx - 1].__str__())
+			
+			i = 1
+			activeSheet.write(i, 0, 'No')
+			activeSheet.write(i, 1, 'Tweet Id')
+			activeSheet.write(i, 2, 'Created')
+			activeSheet.write(i, 3, 'Text')
+			
+			i += 1
+			
+			for tweet in list_tweet:
+				activeSheet.write(i, 0, str(i - 1))
+				activeSheet.write(i, 1, str(tweet.id))
+				activeSheet.write(i, 2, tweet.time.__str__())
+				activeSheet.write(i, 3, pp.normalize_character(tweet.text))
+				i += 1
+			
+			sheet_idx += 1
+		
+		book.save('sarapan pagi.xls')
+		book.save(TemporaryFile())
+			
+	except Exception, e:
+		util.debug(str(e))
+	
+	print 'fin'

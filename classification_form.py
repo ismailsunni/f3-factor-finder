@@ -209,6 +209,14 @@ class ClassificationForm():
 		self.ent_duration.grid(row = 12, column = 1, padx = 5, pady = 5, sticky = W)
 		self.ent_duration.insert(END, '2')
 		
+		# Decay factor label
+		Label(main_frame, text = "Decay Factor").grid(row = 13, column = 0, sticky = W, padx = 5, pady = 5)
+		
+		# Duration entry
+		self.ent_decay_factor = Entry(main_frame)
+		self.ent_decay_factor.grid(row = 13, column = 1, padx = 5, pady = 5, sticky = W)
+		self.ent_decay_factor.insert(END, '0.5')
+		
 		# Label output
 		Label(main_frame, text = "Output").grid(row = 0, column = 4, sticky = W, padx = 5, pady = 5)
 
@@ -425,6 +433,7 @@ class ClassificationForm():
 				start_time = datetime.strptime(self.ent_start_date.get() + ' ' + self.ent_start_time.get(), '%d-%m-%Y %H:%M:%S')
 				end_time = datetime.strptime(self.ent_end_date.get() + ' ' + self.ent_end_time.get(), '%d-%m-%Y %H:%M:%S')
 				duration_hour = int(self.ent_duration.get())
+				decay_factor = float(self.ent_decay_factor.get())
 				show_graph = bool(self.show_graph_val.get())
 				
 			except Exception, e:
@@ -432,8 +441,8 @@ class ClassificationForm():
 				self.text_output.insert(END, 'Parameter error' + '\n')
 			
 			# to avoid long  variable name, just call it div_sent short of divide_sentiment, pffttt...
-			div_sent = self.FFF._factor_finder.divide_sentiment_time(start_time, end_time, duration_hour)
-			break_point = self.FFF._factor_finder.get_break_points(1)
+			div_sent = self.FFF._factor_finder.divide_sentiment_time(start_time, end_time, duration_hour, decay_factor)
+			break_point = self.FFF._factor_finder.get_break_points()
 			
 			# print retval_divide_sentiment and retval_break_point to output text
 			self.text_output.insert(END, 'Breakpoint Detection : ' + '\n\n')
@@ -449,9 +458,9 @@ class ClassificationForm():
 			self.text_output.insert(END, 'Duration : ' + str(duration_hour) + '\n\n')
 		
 			self.text_output.insert(END, 'No\tStart time\t\tEnd time\t\tNum Tweet\tSentiment\tKumulatif\n')
-			i = 1
+			i = 0
 			for idx in div_sent:
-				self.text_output.insert(END, str(i) + '\t' + str(div_sent[idx]['start_time']) + '\t' + str(div_sent[idx]['end_time']) + '\t' + str(len(div_sent[idx]['list_tweet'])) + '\t\t' + str(div_sent[idx]['sentiment']) + '\t' + str(div_sent[idx]['cum_sentiment']) +'\n')
+				self.text_output.insert(END, str(i + 1) + '\t' + str(div_sent[idx]['start_time']) + '\t' + str(div_sent[idx]['end_time']) + '\t' + str(len(div_sent[idx]['list_tweet'])) + '\t\t' + str(div_sent[idx]['sentiment']) + '\t' + str(div_sent[idx]['cum_sentiment']) +'\n')
 				if idx in break_point:
 					self.text_output.insert(END, '\tTopics :\t'+ ',  '.join(topics[idx]) + '\n')
 				i += 1
@@ -461,7 +470,7 @@ class ClassificationForm():
 			if show_graph:
 				self.text_output.insert(END, '\nShowing graph' + '\n')
 				self.text_output.insert(END, 'Close pop up to continue' + '\n')	
-				self.FFF._factor_finder.plot_graph(1)
+				self.FFF._factor_finder.plot_graph()
 	
 	def extract_topic(self):
 		"""Extract topic from tweet in breakpoint duration"""

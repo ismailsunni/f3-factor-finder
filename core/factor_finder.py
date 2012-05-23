@@ -42,13 +42,13 @@ class factor_finder:
 		retval = {}
 		for i in xrange(0, num_duration):
 			sent_time = {}
-			temp_start += delta_duration
 			sent_time['start_time'] = temp_start
 			sent_time['end_time'] = temp_start + delta_duration
 			sent_time['list_tweet'] = []
 			sent_time['sentiment'] = 0
 			sent_time['cum_sentiment'] = 0
 			retval[i] = sent_time
+			temp_start += delta_duration
 
 		# Add tweet
 		for tweet in self.list_tweet:
@@ -67,8 +67,8 @@ class factor_finder:
 					sum_sentiment += tweet.sentiment
 					num_sentiment += 1
 			if num_sentiment != 0:
-				# mean_sentiment = sum_sentiment / len(retval[idx]['list_tweet'])
-				mean_sentiment = sum_sentiment / num_sentiment
+				mean_sentiment = sum_sentiment / len(retval[idx]['list_tweet'])
+				# mean_sentiment = sum_sentiment / num_sentiment
 			else:
 				mean_sentiment = 0
 			
@@ -87,7 +87,7 @@ class factor_finder:
 
 		return retval
 
-	def plot_graph(self, graf_type = 0):
+	def plot_graph(self):
 		"""Plot Graph"""
 
 		if self.memory == None:
@@ -102,51 +102,31 @@ class factor_finder:
 			absis_data = []
 			for idx in self.memory.keys():
 				absis_data.append(self.memory[idx]['start_time'])
-			ordinat_data = []
 			
-			if graf_type == 0:			
-				for idx in self.memory.keys():
-					ordinat_data.append(self.memory[idx]['sentiment'])
-				pylab.ylim(-1, 1)
-			elif graf_type == 1:
-				for idx in self.memory.keys():
-					ordinat_data.append(self.memory[idx]['cum_sentiment'])
-				pylab.ylim(int(min(ordinat_data) - 1), int(max(ordinat_data) + 1))
-				
-			else:
-				for idx in self.memory.keys():
-					ordinat_data.append(self.memory[idx]['sentiment'])
-				pylab.ylim(-1, 1)
+			ordinat_data = []
+			for idx in self.memory.keys():
+				ordinat_data.append(self.memory[idx]['cum_sentiment'])
+			
+			pylab.ylim(int(min(ordinat_data) - 1), int(max(ordinat_data) + 1))
 					
 			pylab.plot(absis_data, ordinat_data)
 			pylab.show()
 
-	def get_break_points(self, graf_type = 0):
+	def get_break_points(self):
 		"""Get break points"""
 		
 		retval = []
 		if self.memory == None:
 			pass
-		elif graf_type == 0:
-			for idx in self.memory.keys():
-				if idx == 0 or idx == len(self.memory)-1:
-					pass
-				elif (self.memory[idx-1]['sentiment'] < self.memory[idx]['sentiment'] > self.memory[idx+1]['sentiment']) or (self.memory[idx-1]['sentiment'] > self.memory[idx]['sentiment'] < self.memory[idx+1]['sentiment']):
-					retval.append(idx)
-		elif graf_type == 1:
+		else:
 			for idx in self.memory.keys():
 				if idx == 0 or idx == len(self.memory)-1:
 					pass
 				elif (self.memory[idx-1]['cum_sentiment'] < self.memory[idx]['cum_sentiment'] > self.memory[idx+1]['cum_sentiment']) or (self.memory[idx-1]['cum_sentiment'] > self.memory[idx]['cum_sentiment'] < self.memory[idx+1]['cum_sentiment']):
 					retval.append(idx)
-		else:
-			for idx in self.memory.keys():
-				if idx == 0 or idx == len(self.memory)-1:
-					pass
-				elif (self.memory[idx-1]['sentiment'] < self.memory[idx]['sentiment'] > self.memory[idx+1]['sentiment']) or (self.memory[idx-1]['sentiment'] > self.memory[idx]['sentiment'] < self.memory[idx+1]['sentiment']):
-					retval.append(idx)
 		
 		self.break_points = retval
+		
 		return retval
 
 	def clear_memory(self):
@@ -157,6 +137,7 @@ class factor_finder:
 		self.end_time = None
 		self.duration_hour = None
 
+	# please check this function
 	def create_ir_rev(self):
 		"""Create ir_rev object. Need list of set of word in tweet from memory."""
 
@@ -164,15 +145,15 @@ class factor_finder:
 		for idx in self.memory.keys():
 			words_time = []
 			for tweet in self.memory[idx]['list_tweet']:
-				# need to be finished
-				if not tweet.parsed:
-					tweet.preprocess()
-				words_time.extend(tweet.post_parsed_word)
+				if tweet.sentiment != 0:
+					if not tweet.parsed:
+						tweet.preprocess()
+					words_time.extend(tweet.post_parsed_word)
 			list_all_word.append(words_time)
 			
 		list_all_word = util.remove_all_values_from_list(list_all_word, self.keyword)
 		list_all_word = util.remove_all_values_from_list(list_all_word, '')
-		print 'keyword', self.keyword
+		
 		ir_object = ir.IR(list_all_word)
 
 		return ir_object
