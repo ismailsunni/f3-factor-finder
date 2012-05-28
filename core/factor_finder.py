@@ -150,7 +150,7 @@ class factor_finder:
 						tweet.preprocess()
 					words_time.extend(tweet.post_parsed_word)
 			list_all_word.append(words_time)
-			
+		print self.keyword
 		list_all_word = util.remove_all_values_from_list(list_all_word, self.keyword)
 		list_all_word = util.remove_all_values_from_list(list_all_word, '')
 		
@@ -158,7 +158,7 @@ class factor_finder:
 
 		return ir_object
 
-	def get_topics(self, idx, num_keywords = 5):
+	def get_topics(self, idx, num_keywords = 5, sort = True):
 		"""get keyword as a topic from list_tweet in index idx"""
 
 		if self.memory == None:
@@ -167,15 +167,62 @@ class factor_finder:
 			
 		else:
 			ir_object = self.create_ir_rev()
-			sorted_dict_TF_IDF = ir_object.get_dict_TF_IDF(idx)
-			return sorted_dict_TF_IDF[:num_keywords]
+			if sort == True:
+				sorted_dict_TF_IDF = ir_object.get_dict_TF_IDF(idx, True)
+				# print sorted_dict_TF_IDF[:num_keywords]
+				# unsorted_dict_TF_IDF = ir_object.get_dict_TF_IDF(idx, False)
+				# print unsorted_dict_TF_IDF
+				return sorted_dict_TF_IDF[:num_keywords]
+			else:
+				unsorted_dict_TF_IDF = ir_object.get_dict_TF_IDF(idx, False)
+				# print unsorted_dict_TF_IDF
+				return unsorted_dict_TF_IDF
+			
 
+	def get_all_topics(self, num_keywords = 5, decay_factor = 0.5):
+		"""get all topic for each duration. Using decay factor."""
+		
+		list_keywords = {}
+		if self.memory == None:
+			util.debug('memory empty')
+			return None
+		
+		else:
+			for idx in self.memory.keys():
+				list_keywords[idx] = self.get_topics(idx, 100, False)
+		
+		retval = {}
+		for idx in list_keywords.keys():
+			keywords = {}
+			if idx == 0:
+				for keyword in list_keywords[idx]:
+					keywords[keyword] = list_keywords[idx][keyword]
+			else:
+				for keyword in list_keywords[idx]:
+					if retval[idx-1].has_key(keyword):
+						# decay factor
+						keywords[keyword] = list_keywords[idx][keyword] + (decay_factor * retval[idx-1][keyword])
+					else:
+						keywords[keyword] = list_keywords[idx][keyword]
+			retval[idx] = keywords
+		
+		final_retval = {}
+		for r in retval.keys():
+			final_retval[r] = util.sort_dictionary_by_value(retval[r])[:num_keywords]
+		
+		super_final_retval = {}
+		for r in final_retval.keys():
+			super_final_retval[r] = [final_retval[r][i][0] for i in xrange(0, len(final_retval[r]))]
+		
+		return super_final_retval
+		
 	def get_break_point_topics(self, num_topics = 5):
 		"""get keyword as a topic from each breakpoint."""
 		
 		if self.memory == None or self.break_points == None:
 			util.debug('memory empty')
 			return None
+			
 		else:
 			retval = {}
 			for idx in self.break_points:

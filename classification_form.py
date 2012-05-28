@@ -222,7 +222,7 @@ class ClassificationForm():
 
 		# output text
 		self.text_output = Text(main_frame, wrap = WORD)
-		self.text_output.grid(row = 1, column = 4, padx = 5, pady = 5, rowspan = 11, sticky = W+E+N+S)
+		self.text_output.grid(row = 1, column = 4, padx = 5, pady = 5, rowspan = 11, columnspan = 2, sticky = W+E+N+S)
 
 	def exit(self, event = None):
 		"""Exit form application."""
@@ -373,8 +373,9 @@ class ClassificationForm():
 				debug(str(e))
 			
 			test_data = tm.get_test_data(keyword, start_time, end_time)
-			random.seed(random_seed)
-			random.shuffle(test_data)
+			if random_seed != 0:
+				random.seed(random_seed)
+				random.shuffle(test_data)
 			list_tweet = self.FFF.classify_tweets(test_data, keyword, num_tweet)
 			
 			# print to the output text
@@ -415,6 +416,37 @@ class ClassificationForm():
 			self.text_output.insert(END, 'Positif :'+ str(list_sentiment.count(1)) + ' \n')
 			self.text_output.insert(END, 'Netral :'+ str(list_sentiment.count(0)) + ' \n')
 			self.text_output.insert(END, 'Negatif :'+ str(list_sentiment.count(-1)) + ' \n')
+			
+			# this lontong function
+			from xlwt import Workbook
+			from tempfile import TemporaryFile
+			
+			book = Workbook()
+			
+			try:
+				activeSheet = book.add_sheet(str('fuuu'))
+					
+				i = 1
+				activeSheet.write(i, 0, 'No')
+				activeSheet.write(i, 1, 'Created')
+				activeSheet.write(i, 2, 'Text')
+				activeSheet.write(i, 3, 'Sentiment')
+				
+				i += 1
+				
+				for tweet in list_tweet:
+					activeSheet.write(i, 0, str(i - 1))
+					activeSheet.write(i, 1, tweet.time.__str__())
+					activeSheet.write(i, 2, str(tweet.get_normal_text()))
+					activeSheet.write(i, 3, tweet.sentiment)
+					
+					i += 1
+				pret = str(start_time).replace(':', '-')
+				book.save('lontong' + pret+ '.xls')
+				book.save(TemporaryFile())
+			
+			except Exception, e:
+				util.debug(str(e))
 
 	# factor finder method
 	def get_breakpoint(self):
@@ -448,7 +480,8 @@ class ClassificationForm():
 			self.text_output.insert(END, 'Breakpoint Detection : ' + '\n\n')
 			
 			# topic extraction
-			topics = self.FFF._factor_finder.get_break_point_topics()
+			# topics = self.FFF._factor_finder.get_break_point_topics()
+			topics = self.FFF._factor_finder.get_all_topics(5, decay_factor)
 			print topics
 			
 			self.text_output.insert(END, 'Breakpoint parameters : ' + '\n')
@@ -457,12 +490,12 @@ class ClassificationForm():
 			self.text_output.insert(END, 'End time : ' + str(end_time) + '\n')
 			self.text_output.insert(END, 'Duration : ' + str(duration_hour) + '\n\n')
 		
-			self.text_output.insert(END, 'No\tStart time\t\tEnd time\t\tNum Tweet\tSentiment\tKumulatif\n')
+			self.text_output.insert(END, 'No\tStart time\t\t     Num\t\tSentiment\tKumulatif\n')
 			i = 0
 			for idx in div_sent:
-				self.text_output.insert(END, str(i + 1) + '\t' + str(div_sent[idx]['start_time']) + '\t' + str(div_sent[idx]['end_time']) + '\t' + str(len(div_sent[idx]['list_tweet'])) + '\t\t' + str(div_sent[idx]['sentiment']) + '\t' + str(div_sent[idx]['cum_sentiment']) +'\n')
-				if idx in break_point:
-					self.text_output.insert(END, '\tTopics :\t'+ ',  '.join(topics[idx]) + '\n')
+				#self.text_output.insert(END, str(i + 1) + '\t' + str(div_sent[idx]['start_time']) + '\t' + str(div_sent[idx]['end_time'])[:13] + '\t' + str(len(div_sent[idx]['list_tweet'])) + '\t\t' + str(div_sent[idx]['sentiment'])[:6] + '\t' + str(div_sent[idx]['cum_sentiment'])[:6] +'\n')
+				self.text_output.insert(END, str(i + 1) + '\t' + str(div_sent[idx]['start_time']) + '\t\t' + str(len(div_sent[idx]['list_tweet'])) + '\t\t' + str(div_sent[idx]['sentiment'])[:6] + '\t' + str(div_sent[idx]['cum_sentiment'])[:6] +'\n')
+				self.text_output.insert(END, '\tTopics :\t'+ ',  '.join(topics[idx]) + '\n')
 				i += 1
 			
 			
@@ -475,7 +508,9 @@ class ClassificationForm():
 	def extract_topic(self):
 		"""Extract topic from tweet in breakpoint duration"""
 		
-		print_index_list_dict(self.FFF._factor_finder.get_break_point_topics(5))
+		print self.FFF._factor_finder.get_all_topics(5, 0.5)
+		print "--------------"
+		print self.FFF._factor_finder.get_all_topics(5, 0)
 			
 		pass
 	

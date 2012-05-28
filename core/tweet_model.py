@@ -74,7 +74,9 @@ def get_test_data(keyword = "", start_time = None, end_time = None):
 		where += " AND `created_at` >= '" + start_time.__str__() + "'"
 	if end_time != None:
 		where += " AND `created_at` <= '" + end_time.__str__() + "'"
-
+	
+	order = " ORDER BY `created_at` ASC"
+	
 	retval = db.read(query + where)
 	# print query + where
 
@@ -115,12 +117,13 @@ if __name__ == '__main__':
 	keyword = "foke"
 	start_time = datetime.strptime("10-4-2012 18:00:00", '%d-%m-%Y %H:%M:%S')
 	end_time = datetime.strptime("18-4-2012 12:00:00", '%d-%m-%Y %H:%M:%S')
-	duration_hour = 2
+	duration_hour = 6
 	
 	retval, dur_times = get_test_data_by_duration(keyword, start_time, end_time, duration_hour)
 	
 	num_tweet = 0
 	for ret in retval:
+		print len(ret)
 		num_tweet += len(ret)
 	print num_tweet
 	
@@ -155,7 +158,7 @@ if __name__ == '__main__':
 			
 			sheet_idx += 1
 		
-		book.save('sarapan pagi.xls')
+		book.save('sarapan pasca subuh.xls')
 		book.save(TemporaryFile())
 			
 	except Exception, e:

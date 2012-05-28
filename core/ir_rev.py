@@ -34,16 +34,18 @@ class IR:
 		"""Get TF IDF value of a word in ingredients in a certain index."""
 		return self.get_TF(word, idx) * self.get_IDF(word)
 
-	def get_dict_TF_IDF(self, idx):
+	def get_dict_TF_IDF(self, idx, sort = True):
 		"""Get dictionary contain all word in index idx and its TF IDF value and sorted by TF IDF value."""	
 
 		dict_TF_IDF = {}
 		for word in set(self.ingredients[idx]):
 			dict_TF_IDF[word] = self.get_TF_IDF(word, idx)
 
-		retval = util.sort_dictionary_by_value(dict_TF_IDF)
-
-		return retval
+		if sort == True:
+			retval = util.sort_dictionary_by_value(dict_TF_IDF)
+			return retval
+		else:
+			return dict_TF_IDF
 
 
 	def get_set_word(self):
