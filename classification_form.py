@@ -5,6 +5,7 @@
 
 import random
 from Tkinter import *
+import tkMessageBox
 from os import getcwd, makedirs, path
 import tkFileDialog as tkFD
 from core.util import *
@@ -33,6 +34,27 @@ class ClassificationForm():
 		main_frame = Frame(self.parent, bd = 10)
 		main_frame.pack(fill = BOTH, expand = YES)
 
+		menu_bar = Menu(self.parent)
+		
+		# Pulldown file menu
+		file_menu = Menu(menu_bar, tearoff=0)
+		file_menu.add_command(label="Save Classifier", command=self.save_classifier)
+		file_menu.add_command(label="Load Classifier", command=self.load_classifier)
+		file_menu.add_separator()
+		file_menu.add_command(label="Save Result", command=self.load_result)
+		file_menu.add_command(label="Load Result", command=self.load_result)
+		file_menu.add_separator()
+		file_menu.add_command(label="Exit", command=self.exit)
+		menu_bar.add_cascade(label="File", menu=file_menu)
+		
+		# Pulldown help menu
+		help_menu = Menu(menu_bar, tearoff=0)
+		help_menu.add_command(label="About", command=self.show_about)
+		help_menu.add_command(label="Help", command=self.show_help)
+		menu_bar.add_cascade(label="Help", menu=help_menu)
+		
+		self.parent.config(menu=menu_bar)
+		
 		# Label User Input
 		Label(main_frame, text = "Parameter").grid(row = 0, column = 0, columnspan = 2, sticky = W, padx = 5, pady = 5)
 
@@ -110,24 +132,24 @@ class ClassificationForm():
 		# self.btn_plot_graph.grid(row = 10, column = 2, padx = 5, pady = 5, sticky = W+E)
 		
 		# Topic Extraction
-		self.btn_extract_topic = Button(main_frame, text = 'Extract Topic', command = self.extract_topic)
-		self.btn_extract_topic.grid(row = 10, column = 3, padx = 5, pady = 5, sticky = W+E)
+		# self.btn_extract_topic = Button(main_frame, text = 'Extract Topic', command = self.extract_topic)
+		# self.btn_extract_topic.grid(row = 10, column = 3, padx = 5, pady = 5, sticky = W+E)
 		
 		# Load classifier
-		self.btn_load_classifier = Button(main_frame, text = 'Load Classifier', command = self.load_classifier)
-		self.btn_load_classifier.grid(row = 11, column = 2, padx = 5, pady = 5, sticky = W+E)
+		# self.btn_load_classifier = Button(main_frame, text = 'Load Classifier', command = self.load_classifier)
+		# self.btn_load_classifier.grid(row = 10, column = 2, padx = 5, pady = 5, sticky = W+E)
 		
 		# Save classifier
-		self.btn_save_classifier = Button(main_frame, text = 'Save Classifier', command = self.save_classifier)
-		self.btn_save_classifier.grid(row = 11, column = 3, padx = 5, pady = 5, sticky = W+E)
+		# self.btn_save_classifier = Button(main_frame, text = 'Save Classifier', command = self.save_classifier)
+		# self.btn_save_classifier.grid(row = 10, column = 3, padx = 5, pady = 5, sticky = W+E)
 		
 		# Load FF
-		self.btn_load_FF = Button(main_frame, text = 'Load FF', command = self.load_FF)
-		self.btn_load_FF.grid(row = 12, column = 2, padx = 5, pady = 5, sticky = W+E)
+		# self.btn_load_FF = Button(main_frame, text = 'Load Result', command = self.load_result)
+		# self.btn_load_FF.grid(row = 11, column = 2, padx = 5, pady = 5, sticky = W+E)
 		
 		# Save FF
-		self.btn_save_FF = Button(main_frame, text = 'Save FF', command = self.save_FF)
-		self.btn_save_FF.grid(row = 12, column = 3, padx = 5, pady = 5, sticky = W+E)
+		# self.btn_save_FF = Button(main_frame, text = 'Save Result', command = self.save_result)
+		# self.btn_save_FF.grid(row = 11, column = 3, padx = 5, pady = 5, sticky = W+E)
 		
 		# Label preprocess
 		Label(main_frame, text = "Preprocess Options").grid(row = 0, column = 2, columnspan = 2, sticky = W, padx = 5, pady = 5)
@@ -229,6 +251,17 @@ class ClassificationForm():
 
 		self.parent.destroy()
 
+	# show about and help form
+	def show_about(self):
+		"""Show about form."""
+		
+		tkMessageBox.showinfo("About", "Prototipe Tugas Akhir @ismailsunni")
+	
+	def show_help(self):
+		"""Show about form."""
+		
+		tkMessageBox.showinfo("Help", "Need help? Mention me, @ismailsunni")	
+	
 	# classifier methods
 	def get_accuracy_cross_validation(self):
 		"""Get accuration for current classification."""
@@ -589,8 +622,8 @@ class ClassificationForm():
 				util.debug('failed to save classifier')
 	
 	# save and load FF
-	def load_FF(self):
-		"""Load classifier."""
+	def load_result(self):
+		"""Load classify result."""
 		
 		file_opt = options = {}
 		options['defaultextension'] = ''		
@@ -613,14 +646,14 @@ class ClassificationForm():
 			# print to the output text
 			if flag:
 				util.debug('Loaded')
-				self.text_output.insert(END, 'Factor Finder loaded...' + '\n\n')
+				self.text_output.insert(END, 'Result loaded...' + '\n\n')
 
 			else:
-				self.text_output.insert(END, 'Failed to load factor finder...')
-				util.debug('Failed to load FF')
+				self.text_output.insert(END, 'Failed to load factor result...')
+				util.debug('Failed to load result')
 	
-	def save_FF(self):
-		"""Save FF."""
+	def save_result(self):
+		"""Save classify result."""
 		
 		now = str(datetime.now()).replace(':', '-')
 		
