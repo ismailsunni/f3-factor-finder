@@ -204,13 +204,13 @@ class ClassificationForm():
 		# Start Date
 		self.ent_start_date = Entry(main_frame)
 		self.ent_start_date.grid(row = 8, column = 1, padx = 5, pady = 5, sticky = W)
-		self.ent_start_date.insert(END, '10-04-2012')
+		self.ent_start_date.insert(END, '15-04-2012')
 		# self.ent_start_date.insert(END, datetime.now().strftime('%d-%m-%Y'))
 		
 		# Start Time
 		self.ent_start_time = Entry(main_frame)
 		self.ent_start_time.grid(row = 9, column = 1, padx = 5, pady = 5, sticky = W)
-		self.ent_start_time.insert(END, '00:00:00')
+		self.ent_start_time.insert(END, '02:00:00')
 		
 		# End Date
 		self.ent_end_date = Entry(main_frame)
@@ -221,7 +221,7 @@ class ClassificationForm():
 		# End Time
 		self.ent_end_time = Entry(main_frame)
 		self.ent_end_time.grid(row = 11, column = 1, padx = 5, pady = 5, sticky = W)
-		self.ent_end_time.insert(END, '12:00:00')
+		self.ent_end_time.insert(END, '10:00:00')
 		
 		# Duration label
 		Label(main_frame, text = "Duration").grid(row = 12, column = 0, sticky = W, padx = 5, pady = 5)
@@ -229,7 +229,7 @@ class ClassificationForm():
 		# Duration entry
 		self.ent_duration = Entry(main_frame)
 		self.ent_duration.grid(row = 12, column = 1, padx = 5, pady = 5, sticky = W)
-		self.ent_duration.insert(END, '2')
+		self.ent_duration.insert(END, '4')
 		
 		# Decay factor label
 		Label(main_frame, text = "Decay Factor").grid(row = 13, column = 0, sticky = W, padx = 5, pady = 5)

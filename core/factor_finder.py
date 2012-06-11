@@ -73,7 +73,7 @@ class factor_finder:
 				mean_sentiment = 0
 			
 			if idx != 0:
-				retval[idx]['cum_sentiment'] = factor * retval[idx - 1]['cum_sentiment'] + mean_sentiment
+				retval[idx]['cum_sentiment'] = factor * retval[idx - 1]['cum_sentiment'] + (1 - factor) * mean_sentiment
 			else:
 				retval[idx]['cum_sentiment'] = mean_sentiment
 				
@@ -203,7 +203,7 @@ class factor_finder:
 				for keyword in list_keywords[idx]:
 					if retval[idx-1].has_key(keyword):
 						# decay factor
-						keywords[keyword] = list_keywords[idx][keyword] + (decay_factor * retval[idx-1][keyword])
+						keywords[keyword] = ((1 - decay_factor) * list_keywords[idx][keyword]) + (decay_factor * retval[idx-1][keyword])
 					else:
 						keywords[keyword] = list_keywords[idx][keyword]
 			retval[idx] = keywords
