@@ -514,8 +514,8 @@ class ClassificationForm():
 			
 			# topic extraction
 			# topics = self.FFF._factor_finder.get_break_point_topics()
-			topics = self.FFF._factor_finder.get_all_topics(5, decay_factor)
-			print topics
+			topics_pos = self.FFF._factor_finder.get_all_topics(5, decay_factor, 1)
+			topics_neg = self.FFF._factor_finder.get_all_topics(5, decay_factor, -1)
 			
 			self.text_output.insert(END, 'Breakpoint parameters : ' + '\n')
 			datetime.now().strftime('%d-%m-%Y')
@@ -528,7 +528,8 @@ class ClassificationForm():
 			for idx in div_sent:
 				#self.text_output.insert(END, str(i + 1) + '\t' + str(div_sent[idx]['start_time']) + '\t' + str(div_sent[idx]['end_time'])[:13] + '\t' + str(len(div_sent[idx]['list_tweet'])) + '\t\t' + str(div_sent[idx]['sentiment'])[:6] + '\t' + str(div_sent[idx]['cum_sentiment'])[:6] +'\n')
 				self.text_output.insert(END, str(i + 1) + '\t' + str(div_sent[idx]['start_time']) + '\t\t' + str(len(div_sent[idx]['list_tweet'])) + '\t\t' + str(div_sent[idx]['sentiment'])[:6] + '\t' + str(div_sent[idx]['cum_sentiment'])[:6] +'\n')
-				self.text_output.insert(END, '\tTopics :\t'+ ',  '.join(topics[idx]) + '\n')
+				self.text_output.insert(END, '\tPositif Topics :\t'+ ',  '.join(topics_pos[idx]) + '\n')
+				self.text_output.insert(END, '\tNegatif Topics :\t'+ ',  '.join(topics_neg[idx]) + '\n')
 				i += 1
 			
 			

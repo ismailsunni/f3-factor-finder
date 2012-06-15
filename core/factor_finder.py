@@ -139,14 +139,14 @@ class factor_finder:
 		self.duration_hour = None
 
 	# please check this function
-	def create_ir_rev(self):
+	def create_ir_rev(self, sentiment = 1):
 		"""Create ir_rev object. Need list of set of word in tweet from memory."""
 
 		list_all_word = []
 		for idx in self.memory.keys():
 			words_time = []
 			for tweet in self.memory[idx]['list_tweet']:
-				if tweet.sentiment != 0:
+				if tweet.sentiment == sentiment:
 					if not tweet.parsed:
 						tweet.preprocess()
 					words_time.extend(tweet.post_parsed_word)
@@ -160,7 +160,7 @@ class factor_finder:
 
 		return ir_object
 
-	def get_topics(self, idx, num_keywords = 5, sort = True):
+	def get_topics(self, idx, num_keywords = 5, sort = True, sentiment = 1):
 		"""get keyword as a topic from list_tweet in index idx"""
 
 		if self.memory == None:
@@ -168,7 +168,7 @@ class factor_finder:
 			return None
 			
 		else:
-			ir_object = self.create_ir_rev()
+			ir_object = self.create_ir_rev(sentiment)
 			if sort == True:
 				sorted_dict_TF_IDF = ir_object.get_dict_TF_IDF(idx, True)
 				# print sorted_dict_TF_IDF[:num_keywords]
@@ -181,7 +181,7 @@ class factor_finder:
 				return unsorted_dict_TF_IDF
 			
 
-	def get_all_topics(self, num_keywords = 5, decay_factor = 0.5):
+	def get_all_topics(self, num_keywords = 5, decay_factor = 0.5, sentiment = 1):
 		"""get all topic for each duration. Using decay factor."""
 		
 		list_keywords = {}
@@ -191,7 +191,7 @@ class factor_finder:
 		
 		else:
 			for idx in self.memory.keys():
-				list_keywords[idx] = self.get_topics(idx, 100, False)
+				list_keywords[idx] = self.get_topics(idx, 100, False, sentiment)
 		
 		retval = {}
 		for idx in list_keywords.keys():
@@ -203,7 +203,7 @@ class factor_finder:
 				for keyword in list_keywords[idx]:
 					if retval[idx-1].has_key(keyword):
 						# decay factor
-						keywords[keyword] = ((1 - decay_factor) * list_keywords[idx][keyword]) + (decay_factor * retval[idx-1][keyword])
+						keywords[keyword] = (list_keywords[idx][keyword]) + (decay_factor * retval[idx-1][keyword])
 					else:
 						keywords[keyword] = list_keywords[idx][keyword]
 			retval[idx] = keywords
