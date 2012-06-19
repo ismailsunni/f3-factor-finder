@@ -108,7 +108,7 @@ class factor_finder:
 				ordinat_data.append(self.memory[idx]['cum_sentiment'])
 			
 			#pylab.ylim(int(min(ordinat_data) - 1), int(max(ordinat_data) + 1))
-			pylab.ylim(-2, int(max(ordinat_data) + 1))
+			pylab.ylim(-1, 1)
 					
 			pylab.plot(absis_data, ordinat_data)
 			pylab.show()
@@ -151,10 +151,10 @@ class factor_finder:
 						tweet.preprocess()
 					words_time.extend(tweet.post_parsed_word)
 			list_all_word.append(words_time)
-		print self.keyword
+
 		list_all_word = util.remove_all_values_from_list(list_all_word, self.keyword)
-		list_all_word = util.remove_all_values_from_list(list_all_word, '')
 		list_all_word = util.remove_all_values_from_list(list_all_word, ' ')
+		list_all_word = util.remove_all_values_from_list(list_all_word, '')
 		
 		ir_object = ir.IR(list_all_word)
 

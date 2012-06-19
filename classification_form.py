@@ -124,32 +124,8 @@ class ClassificationForm():
 		self.btn_classify.grid(row = 9, column = 2, padx = 5, pady = 5, sticky = W+E)
 		
 		# Get break point
-		self.btn_get_breakpoint = Button(main_frame, text = 'Get Breakpoint', command = self.get_breakpoint)
+		self.btn_get_breakpoint = Button(main_frame, text = 'Extract Topic', command = self.get_breakpoint)
 		self.btn_get_breakpoint.grid(row = 9, column = 3, padx = 5, pady = 5, sticky = W+E)
-		
-		# Plot
-		# self.btn_plot_graph = Button(main_frame, text = 'Plot Graph', command = self.plot_graph)
-		# self.btn_plot_graph.grid(row = 10, column = 2, padx = 5, pady = 5, sticky = W+E)
-		
-		# Topic Extraction
-		# self.btn_extract_topic = Button(main_frame, text = 'Extract Topic', command = self.extract_topic)
-		# self.btn_extract_topic.grid(row = 10, column = 3, padx = 5, pady = 5, sticky = W+E)
-		
-		# Load classifier
-		# self.btn_load_classifier = Button(main_frame, text = 'Load Classifier', command = self.load_classifier)
-		# self.btn_load_classifier.grid(row = 10, column = 2, padx = 5, pady = 5, sticky = W+E)
-		
-		# Save classifier
-		# self.btn_save_classifier = Button(main_frame, text = 'Save Classifier', command = self.save_classifier)
-		# self.btn_save_classifier.grid(row = 10, column = 3, padx = 5, pady = 5, sticky = W+E)
-		
-		# Load FF
-		# self.btn_load_FF = Button(main_frame, text = 'Load Result', command = self.load_result)
-		# self.btn_load_FF.grid(row = 11, column = 2, padx = 5, pady = 5, sticky = W+E)
-		
-		# Save FF
-		# self.btn_save_FF = Button(main_frame, text = 'Save Result', command = self.save_result)
-		# self.btn_save_FF.grid(row = 11, column = 3, padx = 5, pady = 5, sticky = W+E)
 		
 		# Label preprocess
 		Label(main_frame, text = "Preprocess Options").grid(row = 0, column = 2, columnspan = 2, sticky = W, padx = 5, pady = 5)
@@ -232,7 +208,7 @@ class ClassificationForm():
 		self.ent_duration.insert(END, '4')
 		
 		# Decay factor label
-		Label(main_frame, text = "Decay Factor").grid(row = 13, column = 0, sticky = W, padx = 5, pady = 5)
+		Label(main_frame, text = "Disc Cumulative Factor").grid(row = 13, column = 0, sticky = W, padx = 5, pady = 5)
 		
 		# Duration entry
 		self.ent_decay_factor = Entry(main_frame)
@@ -481,7 +457,7 @@ class ClassificationForm():
 			except Exception, e:
 				util.debug(str(e))
 
-	# factor finder method
+	# extract topic method
 	def get_breakpoint(self):
 		"""Get when the breakpoints happened. Show the graph if it's selected."""
 		
@@ -489,7 +465,7 @@ class ClassificationForm():
 		
 		# check if the data is not empty
 		if self.FFF._factor_finder.list_tweet == None:
-			self.text_output.insert(END, 'Failed to calculate breakpoint, list tweet is empty' + '\n')	
+			self.text_output.insert(END, 'Failed to extract topic, list tweet is empty' + '\n')	
 
 		else:
 			# retrieve parameter			
@@ -510,18 +486,19 @@ class ClassificationForm():
 			break_point = self.FFF._factor_finder.get_break_points()
 			
 			# print retval_divide_sentiment and retval_break_point to output text
-			self.text_output.insert(END, 'Breakpoint Detection : ' + '\n\n')
+			self.text_output.insert(END, 'Topic Extraction : ' + '\n\n')
 			
 			# topic extraction
 			# topics = self.FFF._factor_finder.get_break_point_topics()
 			topics_pos = self.FFF._factor_finder.get_all_topics(5, decay_factor, 1)
 			topics_neg = self.FFF._factor_finder.get_all_topics(5, decay_factor, -1)
 			
-			self.text_output.insert(END, 'Breakpoint parameters : ' + '\n')
+			self.text_output.insert(END, 'Topic Extraction parameters : ' + '\n')
 			datetime.now().strftime('%d-%m-%Y')
 			self.text_output.insert(END, 'Start time : ' + str(start_time) + '\n')
 			self.text_output.insert(END, 'End time : ' + str(end_time) + '\n')
-			self.text_output.insert(END, 'Duration : ' + str(duration_hour) + '\n\n')
+			self.text_output.insert(END, 'Duration : ' + str(duration_hour) + '\n')
+			self.text_output.insert(END, 'Discounted Cumulative Factor : ' + str(decay_factor) + '\n\n')
 		
 			self.text_output.insert(END, 'No\tStart time\t\t     Num\t\tSentiment\tKumulatif\n')
 			i = 0
@@ -622,7 +599,7 @@ class ClassificationForm():
 				self.text_output.insert(END, 'Saving classifier failed...' + '\n\n')
 				util.debug('failed to save classifier')
 	
-	# save and load FF
+	# save and load result
 	def load_result(self):
 		"""Load classify result."""
 		
@@ -630,7 +607,7 @@ class ClassificationForm():
 		options['defaultextension'] = ''		
 		options['filetypes'] = [('pickle file', '.pickle')]
 		options['initialdir'] = getcwd() + '\\data'
-		options['title'] = 'Load FF'
+		options['title'] = 'Load Result'
 		options['parent'] = self.parent
 		
 		# create dir if not exist
@@ -650,7 +627,7 @@ class ClassificationForm():
 				self.text_output.insert(END, 'Result loaded...' + '\n\n')
 
 			else:
-				self.text_output.insert(END, 'Failed to load factor result...')
+				self.text_output.insert(END, 'Failed to load result...')
 				util.debug('Failed to load result')
 	
 	def save_result(self):
@@ -663,7 +640,7 @@ class ClassificationForm():
 		options['initialfile'] = 'ff_' + now[:19] + '.pickle'
 		options['filetypes'] = [('pickle file', '.pickle')]
 		options['initialdir'] = getcwd() + '\\data'
-		options['title'] = 'Save FF'
+		options['title'] = 'Save Result'
 		options['parent'] = self.parent
 		
 		# create dir if not exist
@@ -675,11 +652,11 @@ class ClassificationForm():
 		self.text_output.delete('1.0', END)
 		if file_name:
 			if self.FFF._factor_finder.save(file_name):
-				self.text_output.insert(END, 'Saving factor finder successful...' + '\n\n')
+				self.text_output.insert(END, 'Saving result successful...' + '\n\n')
 				util.debug('saved')
 			else:
-				self.text_output.insert(END, 'Saving factor finder failed...' + '\n\n')
-				util.debug('failed to save FF')
+				self.text_output.insert(END, 'Saving result failed...' + '\n\n')
+				util.debug('failed to save result')
 		pass
 	
 def main():
