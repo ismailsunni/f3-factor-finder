@@ -12,8 +12,8 @@ import string
 #	Global variables
 negation_words_file = "negation_words.yaml"	# Created by ismailsunni
 stop_words_file = "stop_words.yaml"			# Created by ismailsunni
-emoticons_file = "emoticons.yaml"
-synonyms_file = "synonyms.yaml"
+emoticons_file = "emoticons.yaml"			# Created by ismailsunni
+synonyms_file = "synonyms.yaml"				# Created by ismailsunni
 
 def normalize_character(tweet_text):
     """Normalize a string from unicode character."""
@@ -314,7 +314,7 @@ def preprocess_tweet(tweet, dict_param = None):
 
 		return negation, tweet
 
-
+# main function for testing only
 if __name__ == '__main__':
 	tweet = 'Assalamu\'alaikum wrwb. Pagi rekan2. Kadang hati lbh hidup saat ingat kematian. Saat kebohongan tak lg diperlukan. Berkah, sehat & Semangat!'
 	tweet = 'tau di tidak RT dtg aja pas futsal mingguan atau no\nbar sob! :) RT @diezchocoalmee: @ICI_Bandung. Kapan N dmana sih anak" ic i suka ngmpul di rumah pak RT lho'

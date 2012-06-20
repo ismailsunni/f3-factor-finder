@@ -43,6 +43,8 @@ class tweet_model:
 		self.post_parsed_word = temp_post_parsed_word.split(' ')
 		self.post_parsed = True
 
+	
+# public function	
 def get_dev_data():
 	"""Retrieve data from database for training and test as list of tweet object."""
 
@@ -61,7 +63,7 @@ def get_dev_data():
 		tweets.append(tweet_model(id, time, text, sentiment, negation))
 
 	return tweets
-
+	
 def get_test_data(keyword = "", start_time = None, end_time = None):
 	"""Retrieve data from database for training and test as list of tweet object."""
 
@@ -109,6 +111,7 @@ def get_test_data_by_duration(keyword = "", start_time = None, end_time = None, 
 	
 	return retval, dur_times
 
+# main function for testing only
 if __name__ == '__main__':
 	# t = get_test_data('dear', datetime(2012, 3, 4, 0, 0, 0), datetime(2012, 3, 5, 0, 0, 0))
 	# for s in t:
