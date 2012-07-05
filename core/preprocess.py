@@ -1,5 +1,6 @@
 #!/F3/core/preprocess.py
 # This file is used for preprocessing
+# static function
 # Author : Ismail Sunni/@ismailsunni
 # Created : 2012-03-30
 
@@ -9,19 +10,19 @@ import util as util
 import ttp	# module from https://github.com/BonsaiDen/twitter-text-python
 import string
 
-#	Global variables
+# Global variables
 negation_words_file = "negation_words.yaml"	# Created by ismailsunni
 stop_words_file = "stop_words.yaml"			# Created by ismailsunni
 emoticons_file = "emoticons.yaml"			# Created by ismailsunni
 synonyms_file = "synonyms.yaml"				# Created by ismailsunni
 
 def normalize_character(tweet_text):
-    """Normalize a string from unicode character."""
+    '''Normalize a string from unicode character.'''
 
     return unicodedata.normalize('NFKD', tweet_text.decode('latin-1')).encode('ascii', 'ignore')
 
 def remove_punctuation_word(tweet_word):
-	"""Remove punctuation in a word."""
+	'''Remove punctuation in a word.'''
 
 	punctuations = string.punctuation + '\n'
 
@@ -32,9 +33,9 @@ def remove_punctuation_word(tweet_word):
 	return tweet_word
 
 def remove_punctuation_string(tweet_text):
-	"""Remove punctuation in a tweet_text.
+	'''Remove punctuation in a tweet_text.
 
-		Please use convert_emoticon first"""
+		Please use convert_emoticon first'''
 
 	tweet_words = tweet_text.split(' ')
 	retval = []
@@ -44,12 +45,12 @@ def remove_punctuation_string(tweet_text):
 	return ' '.join(retval)
 
 def fold_case(tweet_text):
-	"""Fold case of a string."""
+	'''Fold case of a string.'''
 	
 	return tweet_text.lower()
 	
 def remove_RT(tweet_text):
-	"""Obvious function."""
+	'''Obvious function.'''
 
 	regex_RT = r'(\A|\s)(RT|rt)(\s|\Z)'
 	tweet_text = re.sub(regex_RT, ' ', tweet_text)
@@ -57,7 +58,7 @@ def remove_RT(tweet_text):
 	return tweet_text
 
 def remove_username(tweet_text):
-	"""Obvious function."""
+	'''Obvious function.'''
 
 	p = ttp.Parser()
 	users = p.parse(tweet_text).users
@@ -67,7 +68,7 @@ def remove_username(tweet_text):
 	return tweet_text
 
 def remove_URL(tweet_text):
-	"""Obvious function."""	
+	'''Obvious function.'''	
 
 	p = ttp.Parser()
 	urls = p.parse(tweet_text).urls
@@ -77,7 +78,7 @@ def remove_URL(tweet_text):
 	return tweet_text
 
 def remove_hashtag(tweet_text):
-	"""Obvious function."""	
+	'''Obvious function.'''	
 
 	p = ttp.Parser()
 	tags = p.parse(tweet_text).tags
@@ -87,7 +88,7 @@ def remove_hashtag(tweet_text):
 	return tweet_text
 
 def clean_number(tweet_text):
-	"""Clean number from tweet_text. Number which is cleaned is stand-alone, begining of word, and end of word number."""
+	'''Clean number from tweet_text. Number which is cleaned is stand-alone, begining of word, and end of word number.'''
 
 	regex_begin = r'(\A| )\d+'
 	regex_end = r'\d+( |\Z|\z)'
@@ -100,7 +101,7 @@ def clean_number(tweet_text):
 	return tweet_text
 
 def clean_one_char(tweet_text):
-	"""Clean a character surround by whitespace."""
+	'''Clean a character surround by whitespace.'''
 
 	# bug found
 	# regex_one_char = r'\s+\S\s+'
@@ -119,7 +120,7 @@ def clean_one_char(tweet_text):
 	return tweet_text
 
 def convert_number(tweet_text):
-	"""Convert number to certain character."""
+	'''Convert number to certain character.'''
 
 	tweet_text = tweet_text.replace('00', 'u')
 	tweet_text = tweet_text.replace('0', 'o')
@@ -143,7 +144,7 @@ def convert_number(tweet_text):
 	return ''.join(new_tweet_text)
 
 def convert_negation(tweet_text):
-	"""Count negation word. If odd, it is a negation tweet_text, return True, otherwise not."""
+	'''Count negation word. If odd, it is a negation tweet_text, return True, otherwise not.'''
 	
 	negation_words = util.load_yaml_file(negation_words_file)
 	num_negation_word = 0
@@ -162,7 +163,7 @@ def convert_negation(tweet_text):
 		return False,' '.join(new_tweet_text)
 
 def remove_stop_words(tweet):
-	"""Remove stop words."""
+	'''Remove stop words.'''
 
 	stop_words = util.load_yaml_file(stop_words_file)
 	tweet_words = tweet.split(' ')
@@ -175,7 +176,7 @@ def remove_stop_words(tweet):
 	return ' '.join(new_tweet)
 
 def convert_emoticon(tweet):
-	"""Convert emoticon to corresponding term."""
+	'''Convert emoticon to corresponding term.'''
 	
 	# load from yaml, get dictionary
 	emoticon_data = util.load_yaml_file(emoticons_file)
@@ -187,7 +188,7 @@ def convert_emoticon(tweet):
 	return tweet
 
 def convert_word(tweet):
-	"""Convert word to corresponding term."""
+	'''Convert word to corresponding term.'''
 	
 	# load from yaml, get dictionary
 	synonym_data = util.load_yaml_file(synonyms_file)
@@ -199,7 +200,7 @@ def convert_word(tweet):
 	return tweet	
 
 def get_levenshtein_distance(string_1, string_2):
-	"""Return the levenshtein distance of two string."""
+	'''Return the levenshtein distance of two string.'''
 
 	if len(string_1) > len(string_2):
 		string_1, string_2 = string_2, string_1
@@ -231,12 +232,12 @@ def get_levenshtein_distance(string_1, string_2):
 	return distance_matrix[first_length-1][second_length-1]
 
 def is_near(string_1, string_2, max_distance = 1):
-	"""Return true if two is string has levenshtein distance no more than max_distance."""
+	'''Return true if two is string has levenshtein distance no more than max_distance.'''
 
 	return get_levenshtein_distance(string_1, string_2) <= max_distance
 
 def is_near_words(string, list_string, max_distance = 1):
-	"""Return true if there is string that has levenshtein distance no more than max_distance."""
+	'''Return true if there is string that has levenshtein distance no more than max_distance.'''
 	
 	for word in list_string:
 		if is_near(word, string, max_distance):
@@ -245,7 +246,7 @@ def is_near_words(string, list_string, max_distance = 1):
 	return False
 
 def postparsed_text(tweet_text, dict_param = None):
-	"""Postparsed is used to makesure foldcase, no punctuation, no RT for factor finder process, no username."""
+	'''Postparsed is used to makesure foldcase, no punctuation, no RT for factor finder process, no username.'''
 	
 	if dict_param == None:	
 		tweet_text = fold_case(tweet_text)

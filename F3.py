@@ -7,6 +7,8 @@ import core.classification as classification
 import core.factor_finder as ff
 
 class F3:
+'''Class defines the program, F3.'''
+
 	def __init__(self, _classifier = None, _factor_finder = None):
 		if _classifier == None:
 			self._classifier = classification.classifier()
@@ -20,8 +22,8 @@ class F3:
 
 	# Classifier sector
 	def classify_tweets(self, tweets, keyword = "", num_tweet = -1):
-		"""Classify list of tweet, return the list of tweet that has been classified.
-			And use them to create factor finder."""
+		'''Classify list of tweet, return the list of tweet that has been classified.
+			And use them to create factor finder.'''
 		
 		# classify tweets
 		tweets = self._classifier.classify_tweets(tweets, keyword, num_tweet)
@@ -30,5 +32,4 @@ class F3:
 		self._factor_finder = ff.factor_finder(tweets, keyword)
 		
 		return tweets
-		
-	# Factor Finder sector
+

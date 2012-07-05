@@ -15,14 +15,12 @@ import pickle
 from copy import deepcopy
 
 class factor_finder:
-	"""docstring for factor_finder"""
+	'''docstring for factor_finder'''
 
 	def __init__(self, list_tweet, keyword = ""):
+	
 		self.list_tweet = list_tweet
-		self.memory = None	# store what?
-		# self.memory stores data of list tweet in each duration and average sentiment value
-		# self.memory[idx] = {start_time, list_tweet, end_time, sentiment}
-		# next improvement, sentiment will be delete, subtitute by creating custom function to calculate the sentiment, hope so :)
+		self.memory = None
 		self.keyword = keyword
 		self.start_time = None
 		self.end_time = None
@@ -30,8 +28,8 @@ class factor_finder:
 		self.break_points = None
 		
 	def divide_sentiment_time(self, start_time, end_time, duration_hour = 1, factor = 0.5):
-		"""Divide a list of sentiment by time, and get mean of each duration
-			Return dictionary with key=each duration, value = sentiment."""
+		'''Divide a list of sentiment by time, and get mean of each duration
+			Return dictionary with key=each duration, value = sentiment.'''
 
 		duration_second = duration_hour * 3600
 		delta_duration = datetime.timedelta(0, duration_second)
@@ -88,7 +86,7 @@ class factor_finder:
 		return retval
 
 	def plot_graph(self):
-		"""Plot Graph"""
+		'''Plot Graph'''
 
 		if self.memory == None:
 			pass
@@ -107,14 +105,13 @@ class factor_finder:
 			for idx in self.memory.keys():
 				ordinat_data.append(self.memory[idx]['cum_sentiment'])
 			
-			#pylab.ylim(int(min(ordinat_data) - 1), int(max(ordinat_data) + 1))
 			pylab.ylim(-1, 1)
 					
 			pylab.plot(absis_data, ordinat_data)
 			pylab.show()
 
 	def get_break_points(self):
-		"""Get break points"""
+		'''Get break points'''
 		
 		retval = []
 		if self.memory == None:
@@ -131,16 +128,16 @@ class factor_finder:
 		return retval
 
 	def clear_memory(self):
-		"""Clear memory."""
+		'''Clear memory.'''
 
 		self.memory = None
 		self.start_time = None
 		self.end_time = None
 		self.duration_hour = None
 
-	# please check this function
+
 	def create_ir_rev(self, sentiment = 1):
-		"""Create ir_rev object. Need list of set of word in tweet from memory."""
+		'''Create ir_rev object. Need list of set of word in tweet from memory.'''
 
 		list_all_word = []
 		for idx in self.memory.keys():
@@ -161,7 +158,7 @@ class factor_finder:
 		return ir_object
 
 	def get_topics(self, idx, num_keywords = 5, sort = True, sentiment = 1):
-		"""get keyword as a topic from list_tweet in index idx"""
+		'''get keyword as a topic from list_tweet in index idx'''
 
 		if self.memory == None:
 			util.debug('memory empty')
@@ -171,18 +168,14 @@ class factor_finder:
 			ir_object = self.create_ir_rev(sentiment)
 			if sort == True:
 				sorted_dict_TF_IDF = ir_object.get_dict_TF_IDF(idx, True)
-				# print sorted_dict_TF_IDF[:num_keywords]
-				# unsorted_dict_TF_IDF = ir_object.get_dict_TF_IDF(idx, False)
-				# print unsorted_dict_TF_IDF
 				return sorted_dict_TF_IDF[:num_keywords]
 			else:
 				unsorted_dict_TF_IDF = ir_object.get_dict_TF_IDF(idx, False)
-				# print unsorted_dict_TF_IDF
 				return unsorted_dict_TF_IDF
 			
 
 	def get_all_topics(self, num_keywords = 5, decay_factor = 0.5, sentiment = 1):
-		"""get all topic for each duration. Using decay factor."""
+		'''get all topic for each duration. Using decay factor.'''
 		
 		list_keywords = {}
 		if self.memory == None:
@@ -219,7 +212,7 @@ class factor_finder:
 		return super_final_retval
 		
 	def get_break_point_topics(self, num_topics = 5):
-		"""get keyword as a topic from each breakpoint."""
+		'''get keyword as a topic from each breakpoint.'''
 		
 		if self.memory == None or self.break_points == None:
 			util.debug('memory empty')
@@ -235,7 +228,7 @@ class factor_finder:
 			
 	# save and load
 	def save(self, file_name):
-		"""Save factor finder, especially list tweet."""
+		'''Save factor finder, especially list tweet.'''
 		
 		try:
 			if not file_name.endswith('.pickle'):
@@ -250,7 +243,7 @@ class factor_finder:
 			return False
 	
 	def load(self, file_name):
-		"""Load factor finder, especially list tweet."""
+		'''Load factor finder, especially list tweet.'''
 		
 		try:
 			f = open(file_name)
@@ -263,6 +256,8 @@ class factor_finder:
 			return False, None
 		pass
 	
+	
+# testing function
 def main():
 	t1 = tm.tweet_model(1, datetime.datetime(2012, 04, 13, 13, 8, 7), 'Finka, Si Seksi yang Doyan Ngebut ', 1)
 	t2 = tm.tweet_model(2, datetime.datetime(2012, 04, 13, 15, 18, 37), 'OSO Securities: IHSG akan Kembali Menguat', -1)

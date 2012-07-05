@@ -8,7 +8,7 @@ import util as util
 import preprocess as pp
 
 class db_conn:
-	"""A class for controlling database connection."""
+	'''A class for controlling database connection.'''
 
 	# database variable
 	db_host = 'localhost'
@@ -27,7 +27,7 @@ class db_conn:
 		self.cursor = self.conn.cursor()
 
 	def read(self, query):
-		"""Read database."""
+		'''Read database.'''
 
 		try:
 			self.cursor.execute(query)
@@ -42,7 +42,7 @@ class db_conn:
 			return None
 
 	def insert(self, query):
-		"""Insert to database."""
+		'''Insert to database.'''
 
 		try:
 			self.cursor.execute(query)
@@ -57,7 +57,7 @@ class db_conn:
 			return False
 
 	def delete(self, query):
-		"""Delete row(s) in database."""
+		'''Delete row(s) in database.'''
 
 		try:
 			self.cursor.execute(query)
@@ -88,7 +88,7 @@ class db_conn:
 
 	# Public Functions
 	def get_dev_data(self):
-		"""Retrieve data from database for training and test."""
+		'''Retrieve data from database for training and test.'''
 		
 		query = "SELECT * FROM " + self.dev_table
 
@@ -116,7 +116,7 @@ class db_conn:
 			return None
 		
 	def get_test_data(self):
-		"""Retrieve data to be predicted from database"""
+		'''Retrieve data to be predicted from database'''
 		query = "SELECT * FROM " + self.test_table + " LIMIT 0, 100"
 
 		try:
@@ -141,7 +141,7 @@ class db_conn:
 			self.conn.rollback()
 			return None
 
-
+# testing function
 def main():
 	conn = db_conn()
 

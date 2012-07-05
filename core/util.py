@@ -1,5 +1,5 @@
 # !/F3/core/util.py
-# util function
+# util functions
 # Author : Ismail Sunni/@ismailsunni
 # Created : 2012-03-23
 
@@ -44,7 +44,7 @@ def remove_all_values_from_list(the_list, val):
     return [value for value in the_list if value != val]
 
 def chunk(the_list, n):
-	"""Chunk the_list to n part even size."""
+	'''Chunk the_list to n part even size.'''
 
 	avg = len(the_list) / n
 	retval = []
@@ -90,7 +90,7 @@ def read_text_file(file_path):
 		return None
 	
 def load_yaml_file(yaml_file_path):
-	"""Load YAML file."""
+	'''Load YAML file.'''
 
 	import yaml
 	

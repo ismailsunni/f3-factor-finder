@@ -8,10 +8,10 @@ from datetime import datetime, timedelta
 import preprocess as pp
 
 class tweet_model:
-	"""A class for representating a tweet."""
+	'''A class for representating a tweet.'''
 	
 	def __init__(self, id, time, text, sentiment = 0, negation = 0):
-		""""Standar __init__ function"""
+		'''Standar __init__ function'''
 
 		self.id = id
 		self.time = time
@@ -24,17 +24,19 @@ class tweet_model:
 		self.post_parsed = False	# this attribute indicate that the parsed_word has been preprocess again
 		
 	def print_tweet(self):
-		"""Print procedure"""
+		'''Print procedure'''
+		
 		import unicodedata
 		print unicodedata.normalize('NFKD', self.text.decode('latin-1')).encode('ascii', 'ignore'), self.sentiment
 
 	def get_normal_text(self):
-
+		'''Return content of the tweet in normal form.'''
+		
 		import unicodedata
 		return unicodedata.normalize('NFKD', self.text.decode('latin-1')).encode('ascii', 'ignore')
 
 	def preprocess(self, dict_param = None):
-		"""Preprocess a tweet and save the result in parsed_word and negation."""
+		'''Preprocess a tweet and save the result in parsed_word and negation.'''
 		
 		self.negation, preprocesssed_text = pp.preprocess_tweet(self.text, dict_param)
 		self.parsed_word = preprocesssed_text.split(' ')
@@ -46,7 +48,7 @@ class tweet_model:
 	
 # public function	
 def get_dev_data():
-	"""Retrieve data from database for training and test as list of tweet object."""
+	'''Retrieve data from database for training and test as list of tweet object.'''
 
 	db = db_conn()
 	tweets = []
@@ -65,7 +67,7 @@ def get_dev_data():
 	return tweets
 	
 def get_test_data(keyword = "", start_time = None, end_time = None):
-	"""Retrieve data from database for training and test as list of tweet object."""
+	'''Retrieve data from database for training and test as list of tweet object.'''
 
 	db = db_conn()
 	tweets = []
@@ -80,7 +82,6 @@ def get_test_data(keyword = "", start_time = None, end_time = None):
 	order = " ORDER BY `created_at` ASC"
 	
 	retval = db.read(query + where)
-	# print query + where
 
 	for row in retval:
 		id = row[0]
@@ -93,6 +94,7 @@ def get_test_data(keyword = "", start_time = None, end_time = None):
 	return tweets
 
 def get_test_data_by_duration(keyword = "", start_time = None, end_time = None, duration_hour = 1):
+	'''return test data divide byu duration.'''
 	
 	duration_second = duration_hour * 3600
 	delta_duration = timedelta(0, duration_second)
@@ -113,10 +115,6 @@ def get_test_data_by_duration(keyword = "", start_time = None, end_time = None, 
 
 # main function for testing only
 if __name__ == '__main__':
-	# t = get_test_data('dear', datetime(2012, 3, 4, 0, 0, 0), datetime(2012, 3, 5, 0, 0, 0))
-	# for s in t:
-		# print s.time, s.text
-	
 	keyword = "foke"
 	start_time = datetime.strptime("10-4-2012 18:00:00", '%d-%m-%Y %H:%M:%S')
 	end_time = datetime.strptime("18-4-2012 12:00:00", '%d-%m-%Y %H:%M:%S')
@@ -161,7 +159,7 @@ if __name__ == '__main__':
 			
 			sheet_idx += 1
 		
-		book.save('sarapan pasca subuh.xls')
+		book.save('output.xls')
 		book.save(TemporaryFile())
 			
 	except Exception, e:

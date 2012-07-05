@@ -10,7 +10,7 @@ import tweet_model as tm
 debug_fe = 1
 
 def extract_feature(tweet, keyword = "", dict_param = None):
-	"""Extracting feature from a tweet."""
+	'''Extracting feature from a tweet.'''
 	# print 'alpha', dict_param
 	if not tweet.parsed:
 		# print 'fe, line 15 not parsed'
@@ -20,7 +20,7 @@ def extract_feature(tweet, keyword = "", dict_param = None):
 	return features
 
 def create_feature_set(dev_tweets, keyword = "", min_occur = 1, dict_param = None):
-	"""Create set of feature that will be used to train classifier."""
+	'''Create set of feature that will be used to train classifier.'''
 
 	features = set()
 	feature_list = []
@@ -40,7 +40,7 @@ def create_feature_set(dev_tweets, keyword = "", min_occur = 1, dict_param = Non
 	return retval
 
 def get_tweet_feature(tweet, features, keyword = "", dict_param = None, max_distance = 1):
-	"""Get features of a tweet."""
+	'''Get features of a tweet.'''
 	
 	tweet_features = {}
 	tweet_raw_features = extract_feature(tweet, keyword, dict_param)

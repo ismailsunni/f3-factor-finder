@@ -16,10 +16,10 @@ import core.util as util
 import copy
 
 class ClassificationForm():
-	"""GUI form for classification."""
+	'''GUI form for classification.'''
 
 	def __init__(self, parent, title):
-		"""Init function for ClassificationForm."""
+		'''Init function for ClassificationForm.'''
 
 		self.parent = parent
 		self.parent.title(title)
@@ -28,7 +28,7 @@ class ClassificationForm():
 		self.FFF = F3()
 		
 	def init_components(self):
-		"""Initialize components."""
+		'''Initialize components.'''
 
 		# Main frame
 		main_frame = Frame(self.parent, bd = 10)
@@ -253,24 +253,24 @@ class ClassificationForm():
 		self.text_output.grid(row = 1, column = 4, padx = 5, pady = 5, rowspan = 11, columnspan = 2, sticky = W+E+N+S)
 
 	def exit(self, event = None):
-		"""Exit form application."""
+		'''Exit form application.'''
 
 		self.parent.destroy()
 
 	# show about and help form
 	def show_about(self):
-		"""Show about form."""
+		'''Show about form.'''
 		
 		tkMessageBox.showinfo("About", "Prototipe Tugas Akhir @ismailsunni")
 	
 	def show_help(self):
-		"""Show about form."""
+		'''Show about form.'''
 		
 		tkMessageBox.showinfo("Help", "Need help? Mention me, @ismailsunni")	
 	
 	# classifier methods
 	def get_accuracy_cross_validation(self):
-		"""Get accuration for current classification."""
+		'''Get accuration for current classification.'''
 		
 		dict_param = {}
 		try:
@@ -329,7 +329,7 @@ class ClassificationForm():
 		self.text_output.insert(END, 'Akurasi : ' + str(accuration) + '\n')
 
 	def train_classifier(self):
-		"""Train classifier."""
+		'''Train classifier.'''
 		
 		dict_param = {}
 		try:
@@ -387,7 +387,7 @@ class ClassificationForm():
 		self.text_output.insert(END, 'Train : ' + str(self.FFF._classifier.trained) + '\n')
 
 	def classify(self):
-		"""Classify some tweets according to the current classifier."""
+		'''Classify some tweets according to the current classifier.'''
 		
 		self.text_output.delete('1.0', END)
 		
@@ -489,7 +489,7 @@ class ClassificationForm():
 
 	# extract topic method
 	def extract_topic(self):
-		"""Get when the breakpoints happened. Show the graph if it's selected."""
+		'''Get when the breakpoints happened. Show the graph if it's selected.'''
 		
 		self.text_output.delete('1.0', END)
 		
@@ -547,7 +547,7 @@ class ClassificationForm():
 				self.FFF._factor_finder.plot_graph()
 	
 	def extract_topic2(self):
-		"""Extract topic from tweet in breakpoint duration"""
+		'''Extract topic from tweet in breakpoint duration'''
 		
 		print self.FFF._factor_finder.get_all_topics(5, 0.5)
 		print "--------------"
@@ -557,7 +557,7 @@ class ClassificationForm():
 	
 	# save and load classifier
 	def load_classifier(self):
-		"""Load classifier."""
+		'''Load classifier.'''
 		
 		file_opt = options = {}
 		options['defaultextension'] = ''		
@@ -602,7 +602,7 @@ class ClassificationForm():
 				util.debug('Failed to load')
 		
 	def save_classifier(self):
-		"""Save classifier."""
+		'''Save classifier.'''
 		
 		now = str(datetime.now()).replace(':', '-')
 		
@@ -631,7 +631,7 @@ class ClassificationForm():
 	
 	# save and load result
 	def load_result(self):
-		"""Load classify result."""
+		'''Load classify result.'''
 		
 		file_opt = options = {}
 		options['defaultextension'] = ''		
@@ -661,7 +661,7 @@ class ClassificationForm():
 				util.debug('Failed to load result')
 	
 	def save_result(self):
-		"""Save classify result."""
+		'''Save classify result.'''
 		
 		now = str(datetime.now()).replace(':', '-')
 		
@@ -688,7 +688,8 @@ class ClassificationForm():
 				self.text_output.insert(END, 'Saving result failed...' + '\n\n')
 				util.debug('failed to save result')
 		pass
-	
+
+# Run F3 Run
 def main():
 	root = Tk()
 	application = ClassificationForm(root, "F3")
